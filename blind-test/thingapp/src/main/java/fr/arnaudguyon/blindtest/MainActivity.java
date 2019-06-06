@@ -51,12 +51,20 @@ public class MainActivity extends Activity {
             try {
                 mPWMDevice = manager.openPwm("PWM1");
 
-                mPWMDevice.setPwmFrequencyHz(100);
+                //mPWMDevice.setPwmFrequencyHz(100);
                 //mPWMDevice.setPwmDutyCycle(25);
 
                 // Enable the PWM signal
                 //mPWMDevice.setEnabled(true);
-                mHandler.post(mChangePWMRunnable);
+                //mHandler.post(mChangePWMRunnable);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendLedData();
+                    }
+                }).start();
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -203,4 +211,30 @@ public class MainActivity extends Activity {
             Log.i(TAG, "End Of Runnable");
         }
     };
+
+
+    private void sendLedData() {
+
+        final long PERIOD = 100;  // ms
+        final double FREQUENCY = 1000.0 / PERIOD;
+
+        try {
+            mPWMDevice.setPwmDutyCycle(0.5);
+            mPWMDevice.setPwmFrequencyHz(FREQUENCY);
+            mPWMDevice.setEnabled(true);
+
+            for(int led=0; led<24; ++led) {
+                mPWMDevice.setPwmDutyCycle(0.5);    // or 0.48
+                Thread.sleep(PERIOD * 24);  // all leds with High value
+
+                mPWMDevice.setPwmDutyCycle(0);
+                Thread.sleep(PERIOD * 64);
+            }
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
