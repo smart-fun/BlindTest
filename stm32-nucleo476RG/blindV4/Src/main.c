@@ -98,22 +98,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   segments_init(&hi2c1, 0x70);
+  segments_print(&hi2c1, 0x70, "5678");
+  HAL_Delay(3000);
   segments_print(&hi2c1, 0x70, "1234");
 
-//  uint32_t DELAY = 500;
-//  uint16_t DEVICE_ADDR = (0x70<<1);
-//
-//  HAL_Delay(DELAY);
-//  uint8_t buffer[] = {0, 0x38,1, 0x3F,2, 0x0,3, 0x3F,4, 0x38};
-//  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, buffer, 10, 100);
-//
-//  for(int i=1; i<10; ++i) {
-//	  buffer[1] = i*2;
-//	  HAL_Delay(DELAY/2);
-//	  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, buffer, 10, 100);
-//  }
-//
-//  HAL_Delay(DELAY);
 
   /* USER CODE END 2 */
 
