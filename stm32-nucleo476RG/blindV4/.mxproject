@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Code/embarque/blindV2/Inc
+HeaderPath=C:/Code/Perso/BlindTest/stm32-nucleo476RG/blindV4/Inc
 HeaderFiles=stm32l4xx_it.h;stm32l4xx_hal_conf.h;main.h;
-SourcePath=C:/Code/embarque/blindV2/Src
+SourcePath=C:/Code/Perso/BlindTest/stm32-nucleo476RG/blindV4/Src
 SourceFiles=stm32l4xx_it.c;stm32l4xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]

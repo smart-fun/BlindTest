@@ -53,8 +53,8 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -93,47 +93,56 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_I2C1_Init();
   MX_USART2_UART_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  //
-  //
-  //
-  //
+  uint32_t DELAY = 500;
   uint16_t DEVICE_ADDR = (0x70<<1);
 
   HAL_StatusTypeDef result = 0;
-  result = HAL_I2C_IsDeviceReady(&hi2c1, DEVICE_ADDR, 3, 500);
-
-  if (result != 0) {
-	  int toto = result;
-	  HAL_Delay(toto);
+  for(int i=0; i<10; ++i) {
+	  result = HAL_I2C_IsDeviceReady(&hi2c1, DEVICE_ADDR, 1, 1000);
+	  if (result == HAL_OK) {
+		  break;
+	  }
+	  HAL_Delay(DELAY);
   }
 
-  HAL_Delay(20);
+  if (result != HAL_OK) {
+	  // ERROR INIT
+	  HAL_Delay(DELAY);
+  }
+
+//  HAL_Delay(DELAY);
+//
+//  uint8_t sysOff[] = {0x20 | 0};	// writeCommand(SYSTEM_SETUP_REGISTER, SYSTEM_SETUP_ON);
+//  result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, sysOff, 1, 100);
+
+  HAL_Delay(DELAY);
+
   uint8_t sysOn[] = {0x20 | 1};	// writeCommand(SYSTEM_SETUP_REGISTER, SYSTEM_SETUP_ON);
   result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, sysOn, 1, 100);
 
-  if (result != 0) {
-	  int toto = result;
-	  HAL_Delay(toto);
-  }
-
-  HAL_Delay(20);
+  HAL_Delay(DELAY);
   uint8_t dispOn[] = {0x80 | 1 | 0}; // writeCommand(DISPLAY_SETUP_REGISTER, DISPLAY_SETUP_ON | DISPLAY_SETUP_BLINK_NONE);
   result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, dispOn, 1, 100);
 
-  HAL_Delay(20);
+  HAL_Delay(DELAY);
   uint8_t bright[] = {0xE0| 7};	// writeCommand(BRIGTHNESS_REGISTER, 7);
   result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, bright, 1, 100);
 
-  HAL_Delay(20);
-  uint8_t buffer[] = {0, 0x39,1, 0x3F,2, 0x0,3, 0x3F,4, 0x38};
+  HAL_Delay(DELAY);
+  uint8_t buffer[] = {0, 0x38,1, 0x3F,2, 0x0,3, 0x3F,4, 0x38};
   result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, buffer, 10, 100);
 
-  HAL_Delay(20);
-  HAL_Delay(100);
+  for(int i=1; i<10; ++i) {
+	  buffer[1] = i*2;
+	  HAL_Delay(DELAY/2);
+	  result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, buffer, 10, 100);
+  }
+
+  HAL_Delay(DELAY);
 
   /* USER CODE END 2 */
 
@@ -218,7 +227,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x10909CEC;
+  hi2c1.Init.Timing = 0x00702991;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -328,9 +337,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-	int error = 1;
-	++error;
-	--error;
+
   /* USER CODE END Error_Handler_Debug */
 }
 
