@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "segments.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,52 +97,23 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  uint32_t DELAY = 500;
-  uint16_t DEVICE_ADDR = (0x70<<1);
+  segments_init(&hi2c1, 0x70);
+  segments_print(&hi2c1, 0x70, "1234");
 
-  HAL_StatusTypeDef result = 0;
-  for(int i=0; i<10; ++i) {
-	  result = HAL_I2C_IsDeviceReady(&hi2c1, DEVICE_ADDR, 1, 1000);
-	  if (result == HAL_OK) {
-		  break;
-	  }
-	  HAL_Delay(DELAY);
-  }
-
-  if (result != HAL_OK) {
-	  // ERROR INIT
-	  HAL_Delay(DELAY);
-  }
-
-//  HAL_Delay(DELAY);
+//  uint32_t DELAY = 500;
+//  uint16_t DEVICE_ADDR = (0x70<<1);
 //
-//  uint8_t sysOff[] = {0x20 | 0};	// writeCommand(SYSTEM_SETUP_REGISTER, SYSTEM_SETUP_ON);
-//  result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, sysOff, 1, 100);
-
-  HAL_Delay(DELAY);
-
-  uint8_t sysOn[] = {0x20 | 1};	// writeCommand(SYSTEM_SETUP_REGISTER, SYSTEM_SETUP_ON);
-  result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, sysOn, 1, 100);
-
-  HAL_Delay(DELAY);
-  uint8_t dispOn[] = {0x80 | 1 | 0}; // writeCommand(DISPLAY_SETUP_REGISTER, DISPLAY_SETUP_ON | DISPLAY_SETUP_BLINK_NONE);
-  result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, dispOn, 1, 100);
-
-  HAL_Delay(DELAY);
-  uint8_t bright[] = {0xE0| 7};	// writeCommand(BRIGTHNESS_REGISTER, 7);
-  result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, bright, 1, 100);
-
-  HAL_Delay(DELAY);
-  uint8_t buffer[] = {0, 0x38,1, 0x3F,2, 0x0,3, 0x3F,4, 0x38};
-  result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, buffer, 10, 100);
-
-  for(int i=1; i<10; ++i) {
-	  buffer[1] = i*2;
-	  HAL_Delay(DELAY/2);
-	  result = HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, buffer, 10, 100);
-  }
-
-  HAL_Delay(DELAY);
+//  HAL_Delay(DELAY);
+//  uint8_t buffer[] = {0, 0x38,1, 0x3F,2, 0x0,3, 0x3F,4, 0x38};
+//  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, buffer, 10, 100);
+//
+//  for(int i=1; i<10; ++i) {
+//	  buffer[1] = i*2;
+//	  HAL_Delay(DELAY/2);
+//	  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, buffer, 10, 100);
+//  }
+//
+//  HAL_Delay(DELAY);
 
   /* USER CODE END 2 */
 
