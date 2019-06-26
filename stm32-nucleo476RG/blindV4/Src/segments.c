@@ -1,5 +1,6 @@
 
 #include "segments.h"
+#include "string.h"
 
 uint8_t chars[128];
 uint8_t charBuffer[] = {0,0x5C, 1,0x5C, 2,0, 3,0x5C, 4,0x5C};
@@ -65,9 +66,9 @@ void initChars() {
 
 int segments_print(I2C_HandleTypeDef * i2c, uint16_t deviceAddress, char * text) {
 	deviceAddress <<= 1;
-	for(int i=0; i<4; ++i) {
-		if (i <strlen(text)) {
-			char c = text[i];
+	for(size_t i=0; i<4; ++i) {
+		if (i < strlen(text)) {
+			uint8_t c = (uint8_t)text[i];
 			if (i<2) {
 				charBuffer[i*2 + 1] = chars[c];
 			} else {
