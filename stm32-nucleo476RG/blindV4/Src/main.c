@@ -117,22 +117,37 @@ int main(void)
 
   resetLeds();
 
-  for(int led=0; led<4; ++led) {
-	  setLedColor(0+led, 63, 0, 0);
-	  setLedColor(4+led, 0, 63, 0);
-	  setLedColor(8+led, 0, 0, 100);
-	  setLedColor(12+led, 63, 0, 63);
-	  setLedColor(16+led, 0, 63, 63);
-	  setLedColor(20+led, 63, 63, 0);
-  }
-
-  updateLeds(&hspi2);
+//  for(int led=0; led<4; ++led) {
+//	  setLedColor(0+led, 63, 0, 0);
+//	  setLedColor(4+led, 0, 63, 0);
+//	  setLedColor(8+led, 0, 0, 100);
+//	  setLedColor(12+led, 63, 0, 63);
+//	  setLedColor(16+led, 0, 63, 63);
+//	  setLedColor(20+led, 63, 63, 0);
+//  }
+//
+//  updateLeds(&hspi2);
 
   while (1)
   {
-	HAL_Delay(50);
-	rotateLeds();
+//	HAL_Delay(50);
+//	rotateLeds();
+//	updateLeds(&hspi2);
+
+	if (HAL_GPIO_ReadPin(GPIOA, Red_Button_Pin)) { // Red pressed
+		setLedColor(0, 63, 0, 0);
+	} else {
+		setLedColor(0, 0, 0, 0);
+	}
+
+	if (HAL_GPIO_ReadPin(GPIOA, Yellow_Button_Pin)) { // Yellow pressed
+		setLedColor(11, 63, 63, 0);
+	} else {
+		setLedColor(11, 0, 0, 0);
+	}
+
 	updateLeds(&hspi2);
+	HAL_Delay(20);
 
     /* USER CODE END WHILE */
 
@@ -354,6 +369,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Red_Button_Pin Yellow_Button_Pin */
+  GPIO_InitStruct.Pin = Red_Button_Pin|Yellow_Button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD2_Pin */
   GPIO_InitStruct.Pin = LD2_Pin;
