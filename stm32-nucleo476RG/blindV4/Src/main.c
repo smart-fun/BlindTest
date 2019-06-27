@@ -54,6 +54,8 @@ UART_HandleTypeDef huart2;
 
 int scoreRed = 0;
 int scoreYellow = 0;
+int redPressed = 0;
+int yellowPressed = 0;
 
 /* USER CODE END PV */
 
@@ -72,6 +74,26 @@ void printScore();
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void initLedColors() {
+	  for(int led=0; led<4; ++led) {
+		  setLedColor(0+led, 63, 0, 0);
+		  setLedColor(4+led, 0, 63, 0);
+		  setLedColor(8+led, 0, 0, 100);
+		  setLedColor(12+led, 63, 0, 63);
+		  setLedColor(16+led, 0, 63, 63);
+		  setLedColor(20+led, 63, 63, 0);
+	  }
+}
+
+void printScore() {
+	char text[4] = {' ', ' ', ' ', ' '};
+	int left = scoreRed % 9;
+	int right = scoreYellow % 9;
+	text[0] = '0' + left;
+	text[3] = '0' + right;
+	segments_print(&hi2c1, 0x70, text);
+}
 
 /* USER CODE END 0 */
 
@@ -130,7 +152,8 @@ int main(void)
 	rotateLeds();
 	updateLeds(&hspi2);
 
-	if (HAL_GPIO_ReadPin(GPIOA, Red_Button_Pin)) { // Red pressed
+	//if (HAL_GPIO_ReadPin(GPIOA, Red_Button_Pin)) { // Red pressed
+	if (redPressed) {
 		++scoreRed;
 		printScore();
 		setAllLedsColor(63, 0, 0);
@@ -138,9 +161,12 @@ int main(void)
 		HAL_Delay(2000);
 		initLedColors();
 		updateLeds(&hspi2);
+		redPressed = 0;
+		yellowPressed = 0;
 	}
 
-	if (HAL_GPIO_ReadPin(GPIOA, Yellow_Button_Pin)) { // Yellow pressed
+	//if (HAL_GPIO_ReadPin(GPIOA, Yellow_Button_Pin)) { // Yellow pressed
+	if (yellowPressed) {
 		++scoreYellow;
 		printScore();
 		setAllLedsColor(63, 63, 0);
@@ -148,6 +174,8 @@ int main(void)
 		HAL_Delay(2000);
 		initLedColors();
 		updateLeds(&hspi2);
+		redPressed = 0;
+		yellowPressed = 0;
 	}
 
     /* USER CODE END WHILE */
@@ -155,26 +183,6 @@ int main(void)
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-}
-
-void initLedColors() {
-	  for(int led=0; led<4; ++led) {
-		  setLedColor(0+led, 63, 0, 0);
-		  setLedColor(4+led, 0, 63, 0);
-		  setLedColor(8+led, 0, 0, 100);
-		  setLedColor(12+led, 63, 0, 63);
-		  setLedColor(16+led, 0, 63, 63);
-		  setLedColor(20+led, 63, 63, 0);
-	  }
-}
-
-void printScore() {
-	char text[4] = {' ', ' ', ' ', ' '};
-	int left = scoreRed % 9;
-	int right = scoreYellow % 9;
-	text[0] = '0' + left;
-	text[3] = '0' + right;
-	segments_print(&hi2c1, 0x70, text);
 }
 
 /**
@@ -393,7 +401,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : Red_Button_Pin Yellow_Button_Pin */
   GPIO_InitStruct.Pin = Red_Button_Pin|Yellow_Button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -404,9 +412,32 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
+/**
+  * @brief EXTI line detection callbacks
+  * @param GPIO_Pin: Specifies the pins connected EXTI line
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  if (GPIO_Pin == Red_Button_Pin) {
+	  if (!yellowPressed) {
+		  redPressed = 1;
+	  }
+  } else if (GPIO_Pin == Yellow_Button_Pin) {
+	  if (!redPressed) {
+		  yellowPressed = 1;
+	  }
+  }
+}
 
 /* USER CODE END 4 */
 
