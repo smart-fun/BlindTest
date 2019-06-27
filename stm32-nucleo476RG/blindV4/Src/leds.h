@@ -14,6 +14,7 @@
 
 void resetLeds();
 void setLedColor(int led, int red, int green, int blue);
+void setAllLedsColor(int red, int green, int blue);
 void updateLeds(SPI_HandleTypeDef * spi);
 void rotateLeds();
 

@@ -32,6 +32,12 @@ void setLedColor(int led, int red, int green, int blue) {
 	}
 }
 
+void setAllLedsColor(int red, int green, int blue) {
+	for(int led=0; led<NUM_LEDS; ++ led) {
+		setLedColor(led, red, green, blue);
+	}
+}
+
 void resetLeds() {
 	for(int i=0; i<NUM_LEDS; ++i) {
 		setLedColor(i, 0,0,0);

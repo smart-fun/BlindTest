@@ -52,6 +52,9 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+int scoreRed = 0;
+int scoreYellow = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,6 +66,8 @@ static void MX_I2C1_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 
+void initLedColors();
+void printScore();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -77,6 +82,8 @@ static void MX_SPI2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+
 
   /* USER CODE END 1 */
   
@@ -105,10 +112,8 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
-  //segments_init(&hi2c1, 0x70);
-  //segments_print(&hi2c1, 0x70, "5678");
-  //HAL_Delay(1000);
-  //segments_print(&hi2c1, 0x70, "1234");
+  segments_init(&hi2c1, 0x70);
+  printScore();
 
   /* USER CODE END 2 */
 
@@ -116,44 +121,60 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   resetLeds();
-
-//  for(int led=0; led<4; ++led) {
-//	  setLedColor(0+led, 63, 0, 0);
-//	  setLedColor(4+led, 0, 63, 0);
-//	  setLedColor(8+led, 0, 0, 100);
-//	  setLedColor(12+led, 63, 0, 63);
-//	  setLedColor(16+led, 0, 63, 63);
-//	  setLedColor(20+led, 63, 63, 0);
-//  }
-//
-//  updateLeds(&hspi2);
+  initLedColors();
+  updateLeds(&hspi2);
 
   while (1)
   {
-//	HAL_Delay(50);
-//	rotateLeds();
-//	updateLeds(&hspi2);
+	HAL_Delay(50);
+	rotateLeds();
+	updateLeds(&hspi2);
 
 	if (HAL_GPIO_ReadPin(GPIOA, Red_Button_Pin)) { // Red pressed
-		setLedColor(0, 63, 0, 0);
-	} else {
-		setLedColor(0, 0, 0, 0);
+		++scoreRed;
+		printScore();
+		setAllLedsColor(63, 0, 0);
+		updateLeds(&hspi2);
+		HAL_Delay(2000);
+		initLedColors();
+		updateLeds(&hspi2);
 	}
 
 	if (HAL_GPIO_ReadPin(GPIOA, Yellow_Button_Pin)) { // Yellow pressed
-		setLedColor(11, 63, 63, 0);
-	} else {
-		setLedColor(11, 0, 0, 0);
+		++scoreYellow;
+		printScore();
+		setAllLedsColor(63, 63, 0);
+		updateLeds(&hspi2);
+		HAL_Delay(2000);
+		initLedColors();
+		updateLeds(&hspi2);
 	}
-
-	updateLeds(&hspi2);
-	HAL_Delay(20);
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
+}
+
+void initLedColors() {
+	  for(int led=0; led<4; ++led) {
+		  setLedColor(0+led, 63, 0, 0);
+		  setLedColor(4+led, 0, 63, 0);
+		  setLedColor(8+led, 0, 0, 100);
+		  setLedColor(12+led, 63, 0, 63);
+		  setLedColor(16+led, 0, 63, 63);
+		  setLedColor(20+led, 63, 63, 0);
+	  }
+}
+
+void printScore() {
+	char text[4] = {' ', ' ', ' ', ' '};
+	int left = scoreRed % 9;
+	int right = scoreYellow % 9;
+	text[0] = '0' + left;
+	text[3] = '0' + right;
+	segments_print(&hi2c1, 0x70, text);
 }
 
 /**

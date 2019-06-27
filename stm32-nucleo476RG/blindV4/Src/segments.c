@@ -52,6 +52,7 @@ void initChars() {
 	for(int i=0; i<128; ++i) {
 		chars[i] = 0x40;
 	}
+	chars[' '] = 0x00;
 	chars['0'] = 0x3F;
 	chars['1'] = 0x06;
 	chars['2'] = 0x5B;
