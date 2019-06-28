@@ -149,10 +149,36 @@ int main(void)
 		HAL_Delay(50);
 		rotateLeds();
 		updateLeds(&hspi1);
-  }
-  /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
+		//if (HAL_GPIO_ReadPin(GPIOA, Red_Button_Pin)) { // Red pressed
+		if (redPressed) {
+			++scoreRed;
+			printScore();
+			setAllLedsColor(63, 0, 0);
+			updateLeds(&hspi1);
+			HAL_Delay(2000);
+			initLedColors();
+			updateLeds(&hspi1);
+			redPressed = 0;
+			yellowPressed = 0;
+		}
+
+		//if (HAL_GPIO_ReadPin(GPIOA, Yellow_Button_Pin)) { // Yellow pressed
+		if (yellowPressed) {
+			++scoreYellow;
+			printScore();
+			setAllLedsColor(63, 63, 0);
+			updateLeds(&hspi1);
+			HAL_Delay(2000);
+			initLedColors();
+			updateLeds(&hspi1);
+			redPressed = 0;
+			yellowPressed = 0;
+		}
+  }
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
   /* USER CODE END 3 */
 }
 
@@ -312,15 +338,43 @@ static void MX_DMA_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  /*Configure GPIO pins : Yellow_Button_Pin Red_Button_Pin */
+  GPIO_InitStruct.Pin = Yellow_Button_Pin|Red_Button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
+
+/**
+  * @brief EXTI line detection callbacks
+  * @param GPIO_Pin: Specifies the pins connected EXTI line
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  if (GPIO_Pin == Red_Button_Pin) {
+	  if (!yellowPressed) {
+		  redPressed = 1;
+	  }
+  } else if (GPIO_Pin == Yellow_Button_Pin) {
+	  if (!redPressed) {
+		  yellowPressed = 1;
+	  }
+  }
+}
 
 /* USER CODE END 4 */
 

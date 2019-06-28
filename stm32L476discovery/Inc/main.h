@@ -58,6 +58,12 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Yellow_Button_Pin GPIO_PIN_10
+#define Yellow_Button_GPIO_Port GPIOE
+#define Yellow_Button_EXTI_IRQn EXTI15_10_IRQn
+#define Red_Button_Pin GPIO_PIN_12
+#define Red_Button_GPIO_Port GPIOE
+#define Red_Button_EXTI_IRQn EXTI15_10_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
