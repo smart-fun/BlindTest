@@ -40,13 +40,13 @@
                   <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32WBxx/Include" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
-                </option>
+                <listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/utilities" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc/core" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Src/core" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Src/blesvc" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc/blesvc" /></option>
 								<option id="com.atollic.truestudio.gcc.symbols.defined.1670122205" name="Defined symbols" superClass="com.atollic.truestudio.gcc.symbols.defined" valueType="definedSymbols">
                   <listOptionValue builtIn="false" value="__weak=__attribute__((weak))" />
                   <listOptionValue builtIn="false" value="__packed=__attribute__((__packed__))" />
                   <listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
                   <listOptionValue builtIn="false" value="STM32WB55xx" />
-                </option>
+                <listOptionValue builtIn="false" value="OPENTHREAD_CONFIG_FILE=&lt;openthread_api_config_ftd.h&gt;" /></option>
 								<option id="com.atollic.truestudio.common_options.target.endianess.1854274048" name="Endianess" superClass="com.atollic.truestudio.common_options.target.endianess" value="com.atollic.truestudio.common_options.target.endianess.little" valueType="enumerated" />
 								<option id="com.atollic.truestudio.common_options.target.mcpu.191909026" name="Microcontroller" superClass="com.atollic.truestudio.common_options.target.mcpu" value="STM32WB55RG" valueType="enumerated" />
 								<option id="com.atollic.truestudio.common_options.target.instr_set.1503159865" name="Instruction set" superClass="com.atollic.truestudio.common_options.target.instr_set" value="com.atollic.truestudio.common_options.target.instr_set.thumb2" valueType="enumerated" />
@@ -82,13 +82,13 @@
                   <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32WBxx/Include" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
-                </option>
+                <listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/utilities" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc/core" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Src/core" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Src/blesvc" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc/blesvc" /></option>
 								<option id="com.atollic.truestudio.gpp.symbols.defined.1619552487" name="Defined symbols" superClass="com.atollic.truestudio.gpp.symbols.defined" valueType="definedSymbols">
                   <listOptionValue builtIn="false" value="__weak=__attribute__((weak))" />
                   <listOptionValue builtIn="false" value="__packed=__attribute__((__packed__))" />
                   <listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
                   <listOptionValue builtIn="false" value="STM32WB55xx" />
-                </option>
+                <listOptionValue builtIn="false" value="OPENTHREAD_CONFIG_FILE=&lt;openthread_api_config_ftd.h&gt;" /></option>
 								<option id="com.atollic.truestudio.common_options.target.endianess.176262651" name="Endianess" superClass="com.atollic.truestudio.common_options.target.endianess" value="com.atollic.truestudio.common_options.target.endianess.little" valueType="enumerated" />
 								<option id="com.atollic.truestudio.common_options.target.mcpu.630487808" name="Microcontroller" superClass="com.atollic.truestudio.common_options.target.mcpu" value="STM32WB55RG" valueType="enumerated" />
 								<option id="com.atollic.truestudio.common_options.target.instr_set.227324580" name="Instruction set" superClass="com.atollic.truestudio.common_options.target.instr_set" value="com.atollic.truestudio.common_options.target.instr_set.thumb2" valueType="enumerated" />
@@ -118,7 +118,7 @@
 							<inputType id="com.atollic.truestudio.gcc.input.1274347818" superClass="com.atollic.truestudio.gcc.input" />
 						</tool>
 					</fileInfo>
-					<sourceEntries>
+					<sourceEntries><entry excluding="" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares" />
             <entry excluding="" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup" />
             <entry excluding="" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers" />
             <entry excluding="" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src" />
@@ -169,13 +169,13 @@
                   <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32WBxx/Include" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
-                </option>
+                <listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/utilities" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc/core" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Src/core" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Src/blesvc" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc/blesvc" /></option>
 								<option id="com.atollic.truestudio.gcc.symbols.defined.1670122205" name="Defined symbols" superClass="com.atollic.truestudio.gcc.symbols.defined" valueType="definedSymbols">
                   <listOptionValue builtIn="false" value="__weak=__attribute__((weak))" />
                   <listOptionValue builtIn="false" value="__packed=__attribute__((__packed__))" />
                   <listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
                   <listOptionValue builtIn="false" value="STM32WB55xx" />
-                </option>
+                <listOptionValue builtIn="false" value="OPENTHREAD_CONFIG_FILE=&lt;openthread_api_config_ftd.h&gt;" /></option>
 								<option id="com.atollic.truestudio.common_options.target.endianess.1854274048" name="Endianess" superClass="com.atollic.truestudio.common_options.target.endianess" value="com.atollic.truestudio.common_options.target.endianess.little" valueType="enumerated" />
 								<option id="com.atollic.truestudio.common_options.target.mcpu.191909026" name="Microcontroller" superClass="com.atollic.truestudio.common_options.target.mcpu" value="STM32WB55RG" valueType="enumerated" />
 								<option id="com.atollic.truestudio.common_options.target.instr_set.1503159865" name="Instruction set" superClass="com.atollic.truestudio.common_options.target.instr_set" value="com.atollic.truestudio.common_options.target.instr_set.thumb2" valueType="enumerated" />
@@ -211,13 +211,13 @@
                   <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32WBxx/Include" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
-                </option>
+                <listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/utilities" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc/core" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Src/core" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Src/blesvc" /><listOptionValue builtIn="false" value="../Middlewares/ST/STM32_WPAN/ble/core/Inc/blesvc" /></option>
 								<option id="com.atollic.truestudio.gpp.symbols.defined.1619552487" name="Defined symbols" superClass="com.atollic.truestudio.gpp.symbols.defined" valueType="definedSymbols">
                   <listOptionValue builtIn="false" value="__weak=__attribute__((weak))" />
                   <listOptionValue builtIn="false" value="__packed=__attribute__((__packed__))" />
                   <listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
                   <listOptionValue builtIn="false" value="STM32WB55xx" />
-                </option>
+                <listOptionValue builtIn="false" value="OPENTHREAD_CONFIG_FILE=&lt;openthread_api_config_ftd.h&gt;" /></option>
 								<option id="com.atollic.truestudio.common_options.target.endianess.176262651" name="Endianess" superClass="com.atollic.truestudio.common_options.target.endianess" value="com.atollic.truestudio.common_options.target.endianess.little" valueType="enumerated" />
 								<option id="com.atollic.truestudio.common_options.target.mcpu.630487808" name="Microcontroller" superClass="com.atollic.truestudio.common_options.target.mcpu" value="STM32WB55RG" valueType="enumerated" />
 								<option id="com.atollic.truestudio.common_options.target.instr_set.227324580" name="Instruction set" superClass="com.atollic.truestudio.common_options.target.instr_set" value="com.atollic.truestudio.common_options.target.instr_set.thumb2" valueType="enumerated" />
@@ -247,7 +247,7 @@
 							<inputType id="com.atollic.truestudio.gcc.input.1274347818" superClass="com.atollic.truestudio.gcc.input" />
 						</tool>
 					</fileInfo>
-					<sourceEntries>
+					<sourceEntries><entry excluding="" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares" />
             <entry excluding="" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup" />
             <entry excluding="" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers" />
             <entry excluding="" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src" />
