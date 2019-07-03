@@ -1,0 +1,17 @@
+tl_mbox.c:462:13:SendFreeBuf	24	static
+tl_mbox.c:69:6:TL_Enable	0	static
+tl_mbox.c:77:6:TL_Init	0	static
+tl_mbox.c:96:9:TL_BLE_Init	16	static
+tl_mbox.c:119:9:TL_BLE_SendCmd	8	static
+tl_mbox.c:128:6:HW_IPCC_BLE_RxEvtNot	24	static
+tl_mbox.c:142:9:TL_BLE_SendAclData	8	static
+tl_mbox.c:151:6:HW_IPCC_BLE_AclDataAckNot	0	static
+tl_mbox.c:161:9:TL_SYS_Init	16	static
+tl_mbox.c:180:9:TL_SYS_SendCmd	8	static
+tl_mbox.c:189:6:HW_IPCC_SYS_CmdEvtNot	0	static
+tl_mbox.c:196:6:HW_IPCC_SYS_EvtNot	24	static
+tl_mbox.c:433:6:TL_MM_Init	16	static
+tl_mbox.c:453:6:TL_MM_EvtDone	8	static
+tl_mbox.c:479:6:TL_TRACES_Init	8	static
+tl_mbox.c:503:13:TL_TRACES_EvtReceived	0	static
+tl_mbox.c:490:6:HW_IPCC_TRACES_EvtNot	16	static

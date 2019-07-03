@@ -1,0 +1,3 @@
+hw_lpm.c:28:6:HW_LPM_SleepMode	0	static
+hw_lpm.c:44:6:HW_LPM_StopMode	0	static
+hw_lpm.c:62:6:HW_LPM_OffMode	0	static

@@ -1,0 +1,11 @@
+scheduler.c:156:6:SCH_RegTask	0	static
+scheduler.c:172:6:SCH_SetTask	8	static
+scheduler.c:189:6:SCH_PauseTask	0	static
+scheduler.c:205:6:SCH_ResumeTask	0	static
+scheduler.c:221:6:SCH_SetEvt	0	static
+scheduler.c:237:6:SCH_ClrEvt	0	static
+scheduler.c:281:10:SCH_IsEvtPend	0	static
+scheduler.c:298:13:SCH_Idle	0	static
+scheduler.c:68:6:SCH_Run	32	static
+scheduler.c:286:13:SCH_EvtIdle	0	static
+scheduler.c:253:6:SCH_WaitEvt	16	static

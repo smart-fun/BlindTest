@@ -1,0 +1,14 @@
+app_entry.c:236:13:APPE_SysStatusNot	0	static
+app_entry.c:242:13:APPE_SysUserEvtRx	8	static
+app_entry.c:226:13:Switch_On_HSI	0	static
+app_entry.c:87:6:APPE_Init	48	static
+app_entry.c:292:6:SCH_Idle	0	static
+app_entry.c:300:6:LPM_EnterStopMode	8	static
+app_entry.c:329:6:LPM_ExitStopMode	0	static
+app_entry.c:373:6:SCH_EvtIdle	0	static
+app_entry.c:378:6:shci_notify_asynch_evt	0	static
+app_entry.c:384:6:shci_cmd_resp_release	0	static
+app_entry.c:390:6:shci_cmd_resp_wait	0	static
+app_entry.c:402:6:DbgOutputInit	0	static
+app_entry.c:416:6:DbgOutputTraces	0	static
+app_entry.c:425:6:HAL_GPIO_EXTI_Callback	0	static
