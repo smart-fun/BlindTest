@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Blind Test Companion</string>
+    
+    <string name="spotify_client_id">b05f0c6348d445a3afc8f3881a760cce</string>
 </resources>

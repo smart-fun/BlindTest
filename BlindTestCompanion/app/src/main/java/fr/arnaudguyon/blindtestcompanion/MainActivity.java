@@ -11,9 +11,15 @@ import android.content.IntentFilter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import fr.arnaudguyon.perm.Perm;
 
@@ -23,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_PERMISSIONS = 2;
+    private static final int REQUEST_SPOTIFY_AUTH = 3;
 
     private static final String PERMISSIONS[] = {Manifest.permission.ACCESS_FINE_LOCATION};
 
@@ -39,8 +46,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
+        testSpotifyConnect();
     }
 
     @Override
@@ -109,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
             permissionBleChecked = true;
         } else if (requestCode == REQUEST_PERMISSIONS) {
             permissionLocationChecked = true;
+        } else if (requestCode == REQUEST_SPOTIFY_AUTH) {
+            final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+            String accessToken = response.getAccessToken();
+            Log.i(TAG, "Access Token: " + accessToken);
         }
 
         if (checkPermissions()) {
@@ -150,5 +163,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void testSpotifyConnect() {
+        String clientId = getString(R.string.spotify_client_id);
+        AuthenticationRequest request = new AuthenticationRequest.Builder(clientId, AuthenticationResponse.Type.TOKEN, getRedirectUri().toString())
+                .setShowDialog(false)
+                .setScopes(new String[]{"user-read-email"})
+                //.setCampaign("your-campaign-token")
+                .build();
+        AuthenticationClient.openLoginActivity(this, REQUEST_SPOTIFY_AUTH, request);
+    }
+
+    private Uri getRedirectUri() {
+        return new Uri.Builder()
+                .scheme("blindtest") //getString(R.string.com_spotify_sdk_redirect_scheme))
+                .authority("home") //getString(R.string.com_spotify_sdk_redirect_host))
+                .build();
+    }
 
 }
