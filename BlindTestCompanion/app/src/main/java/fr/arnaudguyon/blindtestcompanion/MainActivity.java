@@ -12,14 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import fr.arnaudguyon.perm.Perm;
 
@@ -32,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_SPOTIFY_AUTH = 3;
 
     private static final String PERMISSIONS[] = {Manifest.permission.ACCESS_FINE_LOCATION};
-
     private boolean permissionBleChecked = false;
     private boolean permissionLocationChecked = false;
 
@@ -43,13 +38,15 @@ public class MainActivity extends AppCompatActivity {
 
     private BleState bleState = BleState.IDLE;
 
+    private SpotifyHelper spotifyHelper = new SpotifyHelper();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
-        testSpotifyConnect();
+        spotifyHelper.authenticate(this, REQUEST_SPOTIFY_AUTH);
     }
 
     @Override
@@ -119,9 +116,16 @@ public class MainActivity extends AppCompatActivity {
         } else if (requestCode == REQUEST_PERMISSIONS) {
             permissionLocationChecked = true;
         } else if (requestCode == REQUEST_SPOTIFY_AUTH) {
-            final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
-            String accessToken = response.getAccessToken();
-            Log.i(TAG, "Access Token: " + accessToken);
+            String accessToken = spotifyHelper.getAccessToken(resultCode, data);
+            Log.i(TAG, "Spotify Access Token: " + accessToken);
+            if (!TextUtils.isEmpty(accessToken)) {
+                spotifyHelper.connect(this, new SpotifyHelper.OnConnectListener() {
+                    @Override
+                    public void onSpotifyConnection(SpotifyConnectionResult result) {
+                        Log.i(TAG, "Spotify Remote Connection " + result.name());
+                    }
+                });
+            }
         }
 
         if (checkPermissions()) {
@@ -163,22 +167,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
-    private void testSpotifyConnect() {
-        String clientId = getString(R.string.spotify_client_id);
-        AuthenticationRequest request = new AuthenticationRequest.Builder(clientId, AuthenticationResponse.Type.TOKEN, getRedirectUri().toString())
-                .setShowDialog(false)
-                .setScopes(new String[]{"user-read-email"})
-                //.setCampaign("your-campaign-token")
-                .build();
-        AuthenticationClient.openLoginActivity(this, REQUEST_SPOTIFY_AUTH, request);
-    }
-
-    private Uri getRedirectUri() {
-        return new Uri.Builder()
-                .scheme("blindtest") //getString(R.string.com_spotify_sdk_redirect_scheme))
-                .authority("home") //getString(R.string.com_spotify_sdk_redirect_host))
-                .build();
-    }
 
 }
