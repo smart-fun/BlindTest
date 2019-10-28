@@ -18,6 +18,8 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+// Spotify Authentication API is not necessary for simple music play / control
+
 public class SpotifyHelper {
 
     private static final String SCHEME = "blindtest";
@@ -77,6 +79,29 @@ public class SpotifyHelper {
 
                     }
                 });
+    }
+
+    public void disconnect() {
+        if (spotifyAppRemote != null) {
+            SpotifyAppRemote.disconnect(spotifyAppRemote);
+        }
+    }
+
+    private void play(@NonNull String playlistId) {
+        // Play a playlist
+        //mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
+
+        // Subscribe to PlayerState
+//        mSpotifyAppRemote.getPlayerApi()
+//                .subscribeToPlayerState()
+//                .setEventCallback(playerState -> {
+//                    final Track track = playerState.track;
+//                    if (track != null) {
+//                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+//                    }
+//                });
+
+
     }
 
     public interface OnConnectListener {
