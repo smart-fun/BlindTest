@@ -1,0 +1,5 @@
+leds.c:12:6:setLedColor	16	static
+leds.c:35:6:setAllLedsColor	24	static
+leds.c:41:6:resetLeds	8	static
+leds.c:47:6:updateLeds	8	static
+leds.c:52:6:rotateLeds	40	static

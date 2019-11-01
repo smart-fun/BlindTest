@@ -1,0 +1,3 @@
+segments.c:51:6:initChars	0	static
+segments.c:11:5:segments_init	48	static
+segments.c:68:5:segments_print	40	static

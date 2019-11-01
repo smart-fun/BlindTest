@@ -1,0 +1,6 @@
+stm32wbxx_ll_bus.h:508:22:LL_AHB2_GRP1_EnableClock	8	static
+main.c:81:6:initLedColors	8	static
+main.c:94:6:printScore	16	static
+main.c:173:6:SystemClock_Config	200	static
+main.c:109:5:main	32	static
+main.c:478:6:Error_Handler	0	static
