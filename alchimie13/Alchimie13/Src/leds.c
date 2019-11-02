@@ -8,8 +8,17 @@
 #include "leds.h"
 
 static uint8_t led_data[2 + (NUM_LEDS * 12)];
-static uint8_t note_colors[] = {24,0,0, 0,24,0, 24,24,0, 24,0,24};
+static uint8_t note_colors[] = {12,0,0, 0,12,0, 12,12,0, 12,0,12};
 static int deleteOffset[] = {-1, -1, -1, -1};
+
+void leds_resetNotes() {
+	for(int led = 0; led<24; ++led) {
+		setLedColor(led, 0, 0, 0);
+	}
+	for(int voice=0; voice<4; ++voice) {
+		deleteOffset[voice] = -1;
+	}
+}
 
 void leds_playNote(int voice) {
 	int ledOffset = voice * 6;

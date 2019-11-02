@@ -81,6 +81,11 @@ static void MX_SPI1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void resetAll() {
+	patternOffset = 0;
+	leds_resetNotes();
+}
+
 void initLedColors() {
 	int col=16;
 	int colBoost = 24;
@@ -100,6 +105,17 @@ void printScore() {
 	int right = scoreYellow % 10;
 	text[0] = '0' + left;
 	text[3] = '0' + right;
+	segments_print(&hi2c1, 0x70, text);
+}
+
+printNotes() {
+	char text[4] = {' ', ' ', ' ', ' '};
+	for(int i=0; i<4; ++i) {
+		int note = pattern[patternOffset+i];
+		if (note > 0) {
+			text[i] = '0';
+		}
+	}
 	segments_print(&hi2c1, 0x70, text);
 }
 
@@ -145,7 +161,7 @@ int main(void)
   printScore();
 
   resetLeds();
-  initLedColors();
+//  initLedColors();
   updateLeds(&hspi1);
 
   /* USER CODE END 2 */
@@ -166,6 +182,8 @@ int main(void)
 		  }
 	  }
 
+	  printNotes();
+
 	  for(int voice=0; voice<4; ++voice) {
 		  if (pattern[patternOffset + voice] > 0) {
 			  leds_playNote(voice);
@@ -178,9 +196,15 @@ int main(void)
 	  updateLeds(&hspi1);
 		//rotateLeds();
 
-	  scoreRed = ((scoreRed + 1) % 10);
-	  printScore();
+	  GPIO_PinState resetButton = HAL_GPIO_ReadPin(Reset_Track_GPIO_Port, Reset_Track_Pin);
+	  while(resetButton == GPIO_PIN_SET) {
+		  resetButton = HAL_GPIO_ReadPin(Reset_Track_GPIO_Port, Reset_Track_Pin);
+		  resetAll();
+		  HAL_Delay(5);
+	  }
 
+	  //scoreRed = ((scoreRed + 1) % 10);
+	  //printScore();
 
     /* USER CODE END WHILE */
 
@@ -468,6 +492,12 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin|LD1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : Reset_Track_Pin */
+  GPIO_InitStruct.Pin = Reset_Track_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(Reset_Track_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
