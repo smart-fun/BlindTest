@@ -26,6 +26,7 @@
 
 #include "segments.h"
 #include "leds.h"
+#include "pattern.h"
 
 /* USER CODE END Includes */
 
@@ -60,6 +61,8 @@ int scoreRed = 0;
 int scoreYellow = 0;
 int redPressed = 0;
 int yellowPressed = 0;
+
+int patternOffset = 0;
 
 /* USER CODE END PV */
 
@@ -149,15 +152,35 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  int speed = 2;
+
+  int waitValue = 140/speed;
+
   while (1)
   {
-	  scoreRed = ((scoreRed + 1) % 10);
+	  for(int i=0; i<speed; ++i) {
+		  HAL_Delay(waitValue);
+		  for(int voice=0; voice<4; ++voice) {
+			  leds_scrollNote(voice);
+		  }
+	  }
 
-	  HAL_Delay(56);
+	  for(int voice=0; voice<4; ++voice) {
+		  if (pattern[patternOffset + voice] > 0) {
+			  leds_playNote(voice);
+		  }
+	  }
+	  patternOffset += 4;
+	  if (patternOffset >= sizeof(pattern) / sizeof(int)) {
+		  patternOffset = 0;
+	  }
+	  updateLeds(&hspi1);
+		//rotateLeds();
+
+	  scoreRed = ((scoreRed + 1) % 10);
 	  printScore();
 
-		rotateLeds();
-		updateLeds(&hspi1);
 
     /* USER CODE END WHILE */
 

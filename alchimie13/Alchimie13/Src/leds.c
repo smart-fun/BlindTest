@@ -8,6 +8,25 @@
 #include "leds.h"
 
 static uint8_t led_data[2 + (NUM_LEDS * 12)];
+static uint8_t note_colors[] = {24,0,0, 0,24,0, 24,24,0, 24,0,24};
+static int deleteOffset[] = {-1, -1, -1, -1};
+
+void leds_playNote(int voice) {
+	int ledOffset = voice * 6;
+	int colorOffset = voice * 3;
+	deleteOffset[voice] = ledOffset + 5;
+	for(int i=0; i<6; ++i) {
+		setLedColor(ledOffset + i, note_colors[colorOffset], note_colors[colorOffset+1], note_colors[colorOffset+2]);
+	}
+}
+
+void leds_scrollNote(int voice) {
+	int delOffset = deleteOffset[voice];
+	if (delOffset > voice * 6) {
+		setLedColor(delOffset, 0, 0, 0);
+		--deleteOffset[voice];
+	}
+}
 
 void setLedColor(int led, int red, int green, int blue) {
 	int offset = 2 + (led * 12);

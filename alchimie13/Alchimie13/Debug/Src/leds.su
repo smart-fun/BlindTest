@@ -1,5 +1,7 @@
-leds.c:12:6:setLedColor	16	static
-leds.c:35:6:setAllLedsColor	24	static
-leds.c:41:6:resetLeds	8	static
-leds.c:47:6:updateLeds	8	static
-leds.c:52:6:rotateLeds	40	static
+leds.c:14:6:leds_playNote	40	static
+leds.c:23:6:leds_scrollNote	24	static
+leds.c:31:6:setLedColor	48	static
+leds.c:54:6:setAllLedsColor	32	static
+leds.c:60:6:resetLeds	16	static
+leds.c:66:6:updateLeds	16	static
+leds.c:71:6:rotateLeds	48	static

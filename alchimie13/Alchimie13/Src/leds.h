@@ -18,5 +18,8 @@ void setAllLedsColor(int red, int green, int blue);
 void updateLeds(SPI_HandleTypeDef * spi);
 void rotateLeds();
 
+void leds_playNote(int voice);
+void leds_scrollNote();
+
 
 #endif /* LEDS_H_ */
