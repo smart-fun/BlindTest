@@ -63,6 +63,7 @@ void initChars() {
 	chars['7'] = 0x07;
 	chars['8'] = 0x7F;
 	chars['9'] = 0x6F;
+	chars['-'] = 64;
 }
 
 int segments_print(I2C_HandleTypeDef * i2c, uint16_t deviceAddress, char * text) {

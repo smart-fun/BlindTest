@@ -113,7 +113,7 @@ printNotes() {
 	for(int i=0; i<4; ++i) {
 		int note = pattern[patternOffset+i];
 		if (note > 0) {
-			text[i] = '0';
+			text[i] = '-';
 		}
 	}
 	segments_print(&hi2c1, 0x70, text);
@@ -171,7 +171,9 @@ int main(void)
 
   int speed = 2;
 
-  int waitValue = 140/speed;
+  int waitValue = (140 - 3)/speed;
+
+  int skip4 = 0;
 
   while (1)
   {
@@ -184,11 +186,15 @@ int main(void)
 
 	  printNotes();
 
-	  for(int voice=0; voice<4; ++voice) {
-		  if (pattern[patternOffset + voice] > 0) {
-			  leds_playNote(voice);
+	  if (skip4 == 0) {
+		  for(int voice=0; voice<4; ++voice) {
+//			  if (pattern[patternOffset + voice] > 0) {
+				  leds_playNote(voice);
+//			  }
 		  }
 	  }
+	  skip4 = ((skip4 + 1) & 3);
+
 	  patternOffset += 4;
 	  if (patternOffset >= sizeof(pattern) / sizeof(int)) {
 		  patternOffset = 0;
@@ -200,7 +206,7 @@ int main(void)
 	  while(resetButton == GPIO_PIN_SET) {
 		  resetButton = HAL_GPIO_ReadPin(Reset_Track_GPIO_Port, Reset_Track_Pin);
 		  resetAll();
-		  HAL_Delay(5);
+		  HAL_Delay(1);
 	  }
 
 	  //scoreRed = ((scoreRed + 1) % 10);
