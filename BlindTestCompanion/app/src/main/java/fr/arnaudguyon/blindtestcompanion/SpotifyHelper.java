@@ -21,6 +21,9 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import fr.arnaudguyon.okrest.OkRequest;
 import fr.arnaudguyon.okrest.OkResponse;
 import fr.arnaudguyon.okrest.RequestListener;
@@ -35,6 +38,7 @@ public class SpotifyHelper {
     private static final String AUTHORITY = "home";
 
     private String accessToken;
+    private String userId;
     private SpotifyAppRemote spotifyAppRemote;
 
     public void authenticate(@NonNull Activity activity, int requestCode) {
@@ -123,17 +127,12 @@ public class SpotifyHelper {
     }
 
     public String getUserId() {
-        return spotifyAppRemote.getUserApi().toString();
+        return userId;
     }
 
-    public void getPlayerLists(@NonNull Context context, int requestCode) {
+    public void getPlayerLists(final @NonNull Context context, int requestCode) {
 
         String url = "https://api.spotify.com/v1/me";
-
-        //String url = "https://api.spotify.com/v1/users/" + userId + "/playlists";
-
-        // Authorization: Basic *<base64 encoded client_id:client_secret>*
-        //String clientId = context.getString(R.string.spotify_client_id);
 
         OkRequest request = new OkRequest.Builder()
                 .url(url)
@@ -148,7 +147,14 @@ public class SpotifyHelper {
                 if (success) {
                     String result = response.getBodyJSON().toString();
                     Log.i(TAG, result);
-                    JsonObject json = new JSO
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        userId = jsonObject.getString("id");
+                        Log.i(TAG, "User Id " + userId);
+                        getPlayerLists(context, requestCode, userId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     String result = "error " + response.getStatusCode();
                     Log.i(TAG, result);
@@ -156,6 +162,39 @@ public class SpotifyHelper {
             }
 
         });
+    }
+
+    private void getPlayerLists(@NonNull Context context, int requestCode, @NonNull String userId) {
+
+        String url = "https://api.spotify.com/v1/users/" + userId + "/playlists";
+
+        OkRequest request = new OkRequest.Builder()
+                .url(url)
+//                .addParam("postId", "1")
+                .addHeader("Accept", "application/json")
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .build();
+
+        request.execute(context, requestCode, new RequestListener() {
+            @Override
+            public void onRequestResponse(boolean success, int requestCode, OkResponse response) {
+                if (success) {
+                    String result = response.getBodyJSON().toString();
+                    Log.i(TAG, result);
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        Log.i(TAG, "Player Lists " + jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    String result = "error " + response.getStatusCode();
+                    Log.i(TAG, result);
+                }
+            }
+
+        });
+
     }
 
 }
