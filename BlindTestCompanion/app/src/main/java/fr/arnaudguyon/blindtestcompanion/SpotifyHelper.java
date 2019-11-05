@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,8 +13,6 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
-import com.spotify.protocol.error.SpotifyAppRemoteException;
-import com.spotify.protocol.mappers.JsonObject;
 import com.spotify.protocol.mappers.gson.GsonMapper;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -24,6 +21,11 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
+import fr.arnaudguyon.blindtestcompanion.json.JSpotifyPlaylist;
+import fr.arnaudguyon.blindtestcompanion.json.JSpotifyPlaylists;
+import fr.arnaudguyon.blindtestcompanion.json.JSpotifyUser;
 import fr.arnaudguyon.okrest.OkRequest;
 import fr.arnaudguyon.okrest.OkResponse;
 import fr.arnaudguyon.okrest.RequestListener;
@@ -130,28 +132,27 @@ public class SpotifyHelper {
         return userId;
     }
 
-    public void getPlayerLists(final @NonNull Context context, int requestCode) {
+    public void getUser(final @NonNull Context context, final @NonNull getUserListener listener) {
 
         String url = "https://api.spotify.com/v1/me";
 
         OkRequest request = new OkRequest.Builder()
                 .url(url)
-//                .addParam("postId", "1")
                 .addHeader("Accept", "application/json")
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .build();
 
+        int requestCode = 1;
         request.execute(context, requestCode, new RequestListener() {
             @Override
             public void onRequestResponse(boolean success, int requestCode, OkResponse response) {
+                JSpotifyUser user = null;
                 if (success) {
                     String result = response.getBodyJSON().toString();
                     Log.i(TAG, result);
                     try {
                         JSONObject jsonObject = new JSONObject(result);
-                        userId = jsonObject.getString("id");
-                        Log.i(TAG, "User Id " + userId);
-                        getPlayerLists(context, requestCode, userId);
+                        user = new JSpotifyUser(jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -159,31 +160,38 @@ public class SpotifyHelper {
                     String result = "error " + response.getStatusCode();
                     Log.i(TAG, result);
                 }
+                listener.onGetUserFinished(user);
             }
 
         });
     }
 
-    private void getPlayerLists(@NonNull Context context, int requestCode, @NonNull String userId) {
+    public interface getUserListener {
+        void onGetUserFinished(@Nullable JSpotifyUser user);
+    }
+
+    public void getPlaylists(@NonNull Context context, @NonNull String userId, @NonNull final getPlaylistsListener listener) {
 
         String url = "https://api.spotify.com/v1/users/" + userId + "/playlists";
 
-        OkRequest request = new OkRequest.Builder()
+        final OkRequest request = new OkRequest.Builder()
                 .url(url)
-//                .addParam("postId", "1")
                 .addHeader("Accept", "application/json")
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .build();
 
+        int requestCode = 1;
         request.execute(context, requestCode, new RequestListener() {
             @Override
             public void onRequestResponse(boolean success, int requestCode, OkResponse response) {
+                ArrayList<JSpotifyPlaylist> playlists = new ArrayList<>();
                 if (success) {
                     String result = response.getBodyJSON().toString();
                     Log.i(TAG, result);
                     try {
                         JSONObject jsonObject = new JSONObject(result);
-                        Log.i(TAG, "Player Lists " + jsonObject);
+                        JSpotifyPlaylists pls = new JSpotifyPlaylists(jsonObject);
+                        playlists = pls.getPlaylists();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -191,10 +199,15 @@ public class SpotifyHelper {
                     String result = "error " + response.getStatusCode();
                     Log.i(TAG, result);
                 }
+                listener.onGetPlaylistsFinished(playlists);
             }
 
         });
 
+    }
+
+    public interface getPlaylistsListener {
+        void onGetPlaylistsFinished(@NonNull ArrayList<JSpotifyPlaylist> playlists);
     }
 
 }
