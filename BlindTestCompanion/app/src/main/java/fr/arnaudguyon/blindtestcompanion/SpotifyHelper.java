@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,14 +15,21 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 import com.spotify.protocol.error.SpotifyAppRemoteException;
+import com.spotify.protocol.mappers.JsonObject;
 import com.spotify.protocol.mappers.gson.GsonMapper;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+import fr.arnaudguyon.okrest.OkRequest;
+import fr.arnaudguyon.okrest.OkResponse;
+import fr.arnaudguyon.okrest.RequestListener;
+
 // Spotify Authentication API is not necessary for simple music play / control
 
 public class SpotifyHelper {
+
+    private static final String TAG = "SpotifyHelper";
 
     private static final String SCHEME = "blindtest";
     private static final String AUTHORITY = "home";
@@ -111,6 +120,42 @@ public class SpotifyHelper {
             OTHER_ERROR
         }
         void onSpotifyConnection(SpotifyConnectionResult result);
+    }
+
+    public String getUserId() {
+        return spotifyAppRemote.getUserApi().toString();
+    }
+
+    public void getPlayerLists(@NonNull Context context, int requestCode) {
+
+        String url = "https://api.spotify.com/v1/me";
+
+        //String url = "https://api.spotify.com/v1/users/" + userId + "/playlists";
+
+        // Authorization: Basic *<base64 encoded client_id:client_secret>*
+        //String clientId = context.getString(R.string.spotify_client_id);
+
+        OkRequest request = new OkRequest.Builder()
+                .url(url)
+//                .addParam("postId", "1")
+                .addHeader("Accept", "application/json")
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .build();
+
+        request.execute(context, requestCode, new RequestListener() {
+            @Override
+            public void onRequestResponse(boolean success, int requestCode, OkResponse response) {
+                if (success) {
+                    String result = response.getBodyJSON().toString();
+                    Log.i(TAG, result);
+                    JsonObject json = new JSO
+                } else {
+                    String result = "error " + response.getStatusCode();
+                    Log.i(TAG, result);
+                }
+            }
+
+        });
     }
 
 }

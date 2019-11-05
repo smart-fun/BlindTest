@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_PERMISSIONS = 2;
     private static final int REQUEST_SPOTIFY_AUTH = 3;
+    private static final int REQUEST_SPOTIFY_GETPLAYLISTS = 4;
 
     private static final String PERMISSIONS[] = {Manifest.permission.ACCESS_FINE_LOCATION};
     private boolean permissionBleChecked = false;
@@ -129,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSpotifyConnection(SpotifyConnectionResult result) {
                         Log.i(TAG, "Spotify Remote Connection " + result.name());
+                        spotifyHelper.getPlayerLists(MainActivity.this, REQUEST_SPOTIFY_GETPLAYLISTS);
+
                     }
                 });
             }
