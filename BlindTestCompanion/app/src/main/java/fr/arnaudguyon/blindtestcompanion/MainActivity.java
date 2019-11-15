@@ -203,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
                     String name = playlist.getName();
                     String url = playlist.getImageUrl(200);
                     Log.i(TAG, "Playlist " + id + ", " + name +  ", " + url);
+                    spotifyHelper.playPlaylist(id);
+                    break;
                 }
             }
         });

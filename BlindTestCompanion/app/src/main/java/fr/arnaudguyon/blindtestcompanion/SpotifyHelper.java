@@ -210,4 +210,9 @@ public class SpotifyHelper {
         void onGetPlaylistsFinished(@NonNull ArrayList<JSpotifyPlaylist> playlists);
     }
 
+    public void playPlaylist(@NonNull String playlistId) {
+        String id = "spotify:playlist:" + playlistId;
+        spotifyAppRemote.getPlayerApi().play(id);
+    }
+
 }
