@@ -15,11 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import fr.arnaudguyon.blindtestcompanion.json.JSpotifyPlaylist;
+import fr.arnaudguyon.blindtestcompanion.json.JSpotifyTracks;
 import fr.arnaudguyon.blindtestcompanion.json.JSpotifyUser;
 import fr.arnaudguyon.perm.Perm;
 
@@ -35,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean permissionBleChecked = false;
     private boolean permissionLocationChecked = false;
 
+    private View controls;
+    private TextView playlistView;
+
     private enum BleState {
         IDLE,
         SCANNING
@@ -42,13 +48,19 @@ public class MainActivity extends AppCompatActivity {
 
     private BleState bleState = BleState.IDLE;
 
-    private SpotifyHelper spotifyHelper = new SpotifyHelper();
+    private final SpotifyHelper spotifyHelper = new SpotifyHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        playlistView = findViewById(R.id.playlist);
+        controls = findViewById(R.id.controls);
+        controls.findViewById(R.id.pause).setOnClickListener(view -> spotifyHelper.pauseMusic());
+        controls.findViewById(R.id.resume).setOnClickListener(view -> spotifyHelper.resumeMusic());
+        controls.findViewById(R.id.next).setOnClickListener(view -> spotifyHelper.skipMusic());
 
         spotifyHelper.authenticate(this, REQUEST_SPOTIFY_AUTH);
     }
@@ -198,12 +210,20 @@ public class MainActivity extends AppCompatActivity {
         spotifyHelper.getPlaylists(this, userId, new SpotifyHelper.getPlaylistsListener() {
             @Override
             public void onGetPlaylistsFinished(@NonNull ArrayList<JSpotifyPlaylist> playlists) {
+                controls.setVisibility(View.VISIBLE);
                 for(JSpotifyPlaylist playlist : playlists) {
                     String id = playlist.getId();
                     String name = playlist.getName();
                     String url = playlist.getImageUrl(200);
                     Log.i(TAG, "Playlist " + id + ", " + name +  ", " + url);
+                    playlistView.setText(name);
                     spotifyHelper.playPlaylist(id);
+                    spotifyHelper.getTracks(MainActivity.this, id, new SpotifyHelper.getTracksListener() {
+                        @Override
+                        public void onGetTraksFinished(@NonNull JSpotifyTracks tracks) {
+
+                        }
+                    });
                     break;
                 }
             }
