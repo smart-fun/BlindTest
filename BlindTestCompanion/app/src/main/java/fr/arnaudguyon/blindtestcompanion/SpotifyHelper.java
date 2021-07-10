@@ -14,9 +14,9 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 import com.spotify.protocol.mappers.gson.GsonMapper;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.spotify.sdk.android.auth.AuthorizationClient;
+import com.spotify.sdk.android.auth.AuthorizationRequest;
+import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 import org.json.JSONObject;
 
@@ -44,16 +44,16 @@ public class SpotifyHelper {
     public void authenticate(@NonNull Activity activity, int requestCode) {
         String clientId = activity.getString(R.string.spotify_client_id);
         Uri redirectUri = new Uri.Builder().scheme(SCHEME).authority(AUTHORITY).build();
-        AuthenticationRequest request = new AuthenticationRequest.Builder(clientId, AuthenticationResponse.Type.TOKEN, redirectUri.toString())
+        AuthorizationRequest request = new AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUri.toString())
                 .setShowDialog(false)
                 .setScopes(new String[]{"user-read-email", "playlist-read-private"})
                 //.setCampaign("your-campaign-token")
                 .build();
-        AuthenticationClient.openLoginActivity(activity, requestCode, request);
+        AuthorizationClient.openLoginActivity(activity, requestCode, request);
     }
 
     public String getAccessToken(int resultCode, @Nullable Intent data) {
-        final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+        final AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
         accessToken = response.getAccessToken();
         return accessToken;
     }
