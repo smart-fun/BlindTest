@@ -46,6 +46,32 @@ public class SpotPlay {
                 });
     }
 
+    private void getSpotifyUser() {
+//        String url = "https://api.spotify.com/v1/me";
+//
+//        OkRequest request = new OkRequest.Builder()
+//                .url(url)
+//                .addHeader("Accept", "application/json")
+//                .addHeader("Authorization", "Bearer " + accessToken)
+//                .build();
+//
+//        int requestCode = 1;
+//        request.execute(context, requestCode, (success, requestCode1, response) -> {
+//            JSpotifyUser user = null;
+//            if (success) {
+//                JSONObject jsonObject = response.getBodyJSON();
+//                if (jsonObject != null) {
+//                    Log.i(TAG, jsonObject.toString());
+//                    user = new JSpotifyUser(jsonObject);
+//                }
+//            } else {
+//                String result = "error " + response.getStatusCode();
+//                Log.i(TAG, result);
+//            }
+//            listener.onGetUserFinished(user);
+//        });
+    }
+
     public interface SpotConnectListener {
         void onSpotConnection(boolean success);
     }
