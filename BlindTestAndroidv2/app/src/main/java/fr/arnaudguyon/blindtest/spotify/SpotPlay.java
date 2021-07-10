@@ -54,7 +54,13 @@ public class SpotPlay {
                 });
     }
 
-    public void getSpotifyUser(@NonNull Context context) {
+    public void getUser(@NonNull Context context, @NonNull SpotGetUserListener listener) {
+
+        if (user != null) {
+            listener.onGetUserFinished(user);
+            return;
+        }
+
         String url = "https://api.spotify.com/v1/me";
 
         OkRequest request = new OkRequest.Builder()
@@ -76,17 +82,16 @@ public class SpotPlay {
                 String result = "error " + response.getStatusCode();
                 Log.i(SpotConst.TAG, result);
             }
-            //listener.onGetUserFinished(user);
+            listener.onGetUserFinished(user);
         });
-    }
-
-    @Nullable
-    public SpotUser getUser() {
-        return user;
     }
 
     public interface SpotConnectListener {
         void onSpotConnection(boolean success);
+    }
+
+    public interface SpotGetUserListener {
+        void onGetUserFinished(SpotUser user);
     }
 
 }

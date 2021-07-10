@@ -21,7 +21,7 @@ public class SpotUser extends JBase {
         return getString("id");
     }
 
-    public void getPlaylists(@NonNull Context context) {
+    public void getPlaylists(@NonNull Context context, @NonNull GetPlaylistsListener listener) {
 
         String userId = getId();
         String accessToken = SpotAuth.getInstance().getAccessToken();
@@ -49,8 +49,12 @@ public class SpotUser extends JBase {
                 String result = "error " + response.getStatusCode();
                 Log.i(SpotConst.TAG, result);
             }
-            //listener.onGetPlaylistsFinished(playlists);
+            listener.onGetPlaylistsFinished(playlists);
         });
 
+    }
+
+    public interface GetPlaylistsListener {
+        void onGetPlaylistsFinished(@NonNull ArrayList<SpotPlaylist> playlists);
     }
 }

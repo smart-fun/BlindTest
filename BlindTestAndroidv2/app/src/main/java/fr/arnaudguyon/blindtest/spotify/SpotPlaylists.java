@@ -14,6 +14,7 @@ public class SpotPlaylists extends JBase {
         super(jsonObject);
     }
 
+    @NonNull
     public ArrayList<SpotPlaylist> getPlaylists() {
         ArrayList<SpotPlaylist> playlists = new ArrayList<>();
         JSONArray array = getArray("items");

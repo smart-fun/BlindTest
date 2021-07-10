@@ -1,5 +1,6 @@
 package fr.arnaudguyon.blindtest;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+
+import fr.arnaudguyon.blindtest.spotify.SpotPlaylist;
 import fr.arnaudguyon.blindtest.spotify.SpotUser;
 import fr.arnaudguyon.blindtest.spotify.SpotAuth;
 import fr.arnaudguyon.blindtest.spotify.SpotConst;
@@ -81,13 +85,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getUser() {
-        SpotPlay.getInstance().getSpotifyUser(this);
+        SpotPlay.getInstance().getUser(this, new SpotPlay.SpotGetUserListener() {
+            @Override
+            public void onGetUserFinished(SpotUser user) {
+
+            }
+        });
     }
 
     private void getPlaylists() {
-        SpotUser user = SpotPlay.getInstance().getUser();
-        if (user != null) {
-            user.getPlaylists(this);
-        }
+        SpotPlay.getInstance().getUser(this, new SpotPlay.SpotGetUserListener() {
+            @Override
+            public void onGetUserFinished(SpotUser user) {
+                if (user != null) {
+                    user.getPlaylists(MainActivity.this, new SpotUser.GetPlaylistsListener() {
+                        @Override
+                        public void onGetPlaylistsFinished(@NonNull ArrayList<SpotPlaylist> playlists) {
+
+                        }
+                    });
+                }
+            }
+        });
     }
 }
