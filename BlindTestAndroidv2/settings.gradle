@@ -1,0 +1,2 @@
+rootProject.name = "Blind Test Android v2"
+include ':app'
