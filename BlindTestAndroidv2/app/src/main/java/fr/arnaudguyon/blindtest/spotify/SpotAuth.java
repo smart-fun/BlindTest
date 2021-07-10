@@ -43,4 +43,9 @@ public class SpotAuth {
         return !TextUtils.isEmpty(accessToken);
     }
 
+    @NonNull
+    public String getAccessToken() {
+        return accessToken;
+    }
+
 }

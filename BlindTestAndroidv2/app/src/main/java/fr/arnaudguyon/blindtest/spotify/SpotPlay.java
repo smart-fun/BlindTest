@@ -1,6 +1,7 @@
 package fr.arnaudguyon.blindtest.spotify;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,6 +10,10 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
+import org.json.JSONObject;
+
+import fr.arnaudguyon.okrest.OkRequest;
+
 public class SpotPlay {
 
     @NonNull
@@ -16,6 +21,9 @@ public class SpotPlay {
 
     @Nullable
     private SpotifyAppRemote spotifyAppRemote;
+
+    @Nullable
+    SpotUser user;
 
     @NonNull
     public static SpotPlay getInstance() {
@@ -46,30 +54,35 @@ public class SpotPlay {
                 });
     }
 
-    private void getSpotifyUser() {
-//        String url = "https://api.spotify.com/v1/me";
-//
-//        OkRequest request = new OkRequest.Builder()
-//                .url(url)
-//                .addHeader("Accept", "application/json")
-//                .addHeader("Authorization", "Bearer " + accessToken)
-//                .build();
-//
-//        int requestCode = 1;
-//        request.execute(context, requestCode, (success, requestCode1, response) -> {
-//            JSpotifyUser user = null;
-//            if (success) {
-//                JSONObject jsonObject = response.getBodyJSON();
-//                if (jsonObject != null) {
-//                    Log.i(TAG, jsonObject.toString());
-//                    user = new JSpotifyUser(jsonObject);
-//                }
-//            } else {
-//                String result = "error " + response.getStatusCode();
-//                Log.i(TAG, result);
-//            }
-//            listener.onGetUserFinished(user);
-//        });
+    public void getSpotifyUser(@NonNull Context context) {
+        String url = "https://api.spotify.com/v1/me";
+
+        OkRequest request = new OkRequest.Builder()
+                .url(url)
+                .addHeader("Accept", "application/json")
+                .addHeader("Authorization", "Bearer " + SpotAuth.getInstance().getAccessToken())
+                .build();
+
+        int requestCode = 1;
+        request.execute(context, requestCode, (success, requestCode1, response) -> {
+            user = null;
+            if (success) {
+                JSONObject jsonObject = response.getBodyJSON();
+                if (jsonObject != null) {
+                    Log.i(SpotConst.TAG, jsonObject.toString());
+                    user = new SpotUser(jsonObject);
+                }
+            } else {
+                String result = "error " + response.getStatusCode();
+                Log.i(SpotConst.TAG, result);
+            }
+            //listener.onGetUserFinished(user);
+        });
+    }
+
+    @Nullable
+    public SpotUser getUser() {
+        return user;
     }
 
     public interface SpotConnectListener {

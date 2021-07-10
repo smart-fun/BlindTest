@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import fr.arnaudguyon.blindtest.spotify.SpotUser;
 import fr.arnaudguyon.blindtest.spotify.SpotAuth;
 import fr.arnaudguyon.blindtest.spotify.SpotConst;
 import fr.arnaudguyon.blindtest.spotify.SpotPlay;
@@ -33,6 +34,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 connectSpotify();
+            }
+        });
+
+        findViewById(R.id.get_user_spotify).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getUser();
+            }
+        });
+
+        findViewById(R.id.get_playlists_spotify).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPlaylists();
             }
         });
 
@@ -65,4 +80,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void getUser() {
+        SpotPlay.getInstance().getSpotifyUser(this);
+    }
+
+    private void getPlaylists() {
+        SpotUser user = SpotPlay.getInstance().getUser();
+        if (user != null) {
+            user.getPlaylists(this);
+        }
+    }
 }
