@@ -8,8 +8,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+
+import fr.arnaudguyon.blindtest.R;
 
 public class SpotifyActivity extends AppCompatActivity {
 
@@ -18,6 +22,8 @@ public class SpotifyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_spotify);
     }
 
     @Override
@@ -87,9 +93,16 @@ public class SpotifyActivity extends AppCompatActivity {
     }
 
     private void displayPlayLists(@NonNull ArrayList<SpotPlaylist> playlists) {
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        PlayListAdapter adapter = new PlayListAdapter();
+        recyclerView.setAdapter(adapter);
+
         for(SpotPlaylist playlist : playlists) {
             String name = playlist.getName();
-            String imageUrl = playlist.getImageUrl(640);
+            PlayListItem playListItem = new PlayListItem(playlist);
+            adapter.addItem(playListItem);
             Log.i(SpotConst.TAG, "Playlist: " + name);
         }
     }
