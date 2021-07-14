@@ -1,6 +1,7 @@
 package fr.arnaudguyon.blindtest.bluetooth;
 
 import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -21,7 +22,9 @@ import com.inventhys.blecentrallib.Central;
 import com.inventhys.blecentrallib.Helper;
 import com.inventhys.blecentrallib.PeripheralRemote;
 import com.inventhys.blecentrallib.connection.ConnectListener;
+import com.inventhys.blecentrallib.connection.ConnectOptions;
 import com.inventhys.blecentrallib.connection.ConnectionState;
+import com.inventhys.blecentrallib.connection.MtuUpdateListener;
 import com.inventhys.blecentrallib.scan.ScanListener;
 import com.inventhys.blecentrallib.scan.ScanResult;
 import com.inventhys.blecentrallib.scan.StopScanListener;
@@ -40,7 +43,7 @@ import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.perm.Perm;
 import fr.arnaudguyon.perm.PermResult;
 
-public class BluetoothActivity extends AppCompatActivity implements RegisterForNotificationListener {
+public class BluetoothActivity extends AppCompatActivity implements RegisterForNotificationListener, MtuUpdateListener {
 
     // TODO: check bluetooth is ON, location is ON
 
@@ -159,6 +162,9 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
                             }
                         }
                     }
+                    Central.getInstance().updateMtuListener(peripheralRemote, BluetoothActivity.this);
+                    Central.getInstance().changeMtuSize(BluetoothActivity.this, peripheralRemote, 255);
+                    Central.getInstance().setPreferredPhy(peripheralRemote, BluetoothDevice.PHY_LE_2M_MASK, BluetoothDevice.PHY_OPTION_NO_PREFERRED);
                     peripheralRemote.setCallbackThread(NORDIC_UART_SERVICE, TX_NOTIFY, handler);
                     peripheralRemote.registerForNotification(NORDIC_UART_SERVICE, TX_NOTIFY, null, BluetoothActivity.this);
                 } else {
@@ -251,6 +257,11 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
 
     private void yellowPressed() {
         Log.i(TAG, "Yellow Pressed");
+    }
+
+    @Override
+    public void onMtuUpdate(@NonNull PeripheralRemote peripheralRemote, int mtu) {
+        Log.i(TAG, "Mtu Update " + mtu);
     }
 
 }
