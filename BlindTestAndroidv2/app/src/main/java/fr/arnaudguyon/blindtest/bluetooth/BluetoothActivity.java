@@ -7,8 +7,10 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,11 +28,15 @@ import com.inventhys.blecentrallib.scan.StopScanListener;
 import com.inventhys.blecentrallib.scan.StopScanResult;
 import com.inventhys.blecentrallib.transfer.RegisterForNotificationListener;
 import com.inventhys.blecentrallib.transfer.RegisterForNotificationResult;
+import com.inventhys.blecentrallib.transfer.WriteCharacteristicListener;
+import com.inventhys.blecentrallib.transfer.WriteCharacteristicResult;
 import com.inventhys.blecommonlib.ByteHelper;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.UUID;
 
+import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.perm.Perm;
 import fr.arnaudguyon.perm.PermResult;
 
@@ -55,6 +61,8 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
     }
 
     private State state = State.IDLE;
+    private PeripheralRemote peripheralRemote;
+    private Handler handler = new Handler();
 
     public static Intent createIntent(@NonNull Context context) {
         Intent intent = new Intent(context, BluetoothActivity.class);
@@ -135,21 +143,23 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
         Central.getInstance().connect(this, peripheralRemote, null, new ConnectListener() {
             @Override
             public void onConnectionChange(@NonNull PeripheralRemote peripheralRemote, @NonNull ConnectionState connectionState) {
+                BluetoothActivity.this.peripheralRemote = peripheralRemote;
                 if (connectionState == ConnectionState.READY) {
                     state = State.CONNECTED;
                     // continue
                     toast("Connected, Ready to play");
                     BluetoothGatt gatt = Helper.getBluetoothGatt(peripheralRemote);
-                    if(gatt != null) {
+                    if (gatt != null) {
                         List<BluetoothGattService> services = gatt.getServices();
-                        for(BluetoothGattService service : services) {
+                        for (BluetoothGattService service : services) {
                             Log.i(TAG, "Service " + service.getUuid().toString());
                             List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
-                            for(BluetoothGattCharacteristic characteristic : characteristics) {
+                            for (BluetoothGattCharacteristic characteristic : characteristics) {
                                 Log.i(TAG, "    Chara " + characteristic.getUuid().toString());
                             }
                         }
                     }
+                    peripheralRemote.setCallbackThread(NORDIC_UART_SERVICE, TX_NOTIFY, handler);
                     peripheralRemote.registerForNotification(NORDIC_UART_SERVICE, TX_NOTIFY, null, BluetoothActivity.this);
                 } else {
                     if (state == State.CONNECTED) {
@@ -167,16 +177,80 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
     }
 
     @Override
-    public void onRegisterForNotification(@NonNull RegisterForNotificationResult registerForNotificationResult, @NonNull UUID uuid, @NonNull UUID uuid1) {
+    public void onRegisterForNotification(@NonNull RegisterForNotificationResult result, @NonNull UUID uuid, @NonNull UUID uuid1) {
+
+
+        setContentView(R.layout.activity_bluetooth);
+
+        findViewById(R.id.redTest).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendRandom64('R');
+            }
+        });
+
+        findViewById(R.id.yellowTest).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendRandom64('Y');
+            }
+        });
 
     }
 
     @Override
     public void onNotification(@NonNull UUID uuid, @NonNull UUID uuid1, @Nullable byte[] bytes) {
-        if (bytes != null) {
+        if ((bytes != null) && (bytes.length > 0)) {
             String text = ByteHelper.byteArrayToHexaString(bytes);
             Log.i(TAG, text);
+            for(byte b : bytes) {
+                if (b == 'r') {
+                    redPressed();
+                } else if (b == 'y') {
+                    yellowPressed();
+                }
+            }
         }
+    }
+
+    private void sendRandom64(char prefix) {
+        if (peripheralRemote != null) {
+            byte[] data = new byte[20];
+            data[0] = (byte) prefix;
+            int index = 0;
+            long rnd = (long) (Math.random() * Long.MAX_VALUE);
+            while (rnd > 0) {
+                long value = rnd % 26;
+                ++index;
+                byte b = (byte) ('a' + value);
+                data[index] = b;
+                rnd /= 26;
+            }
+            ++index;
+            data[index] = 0;
+            int size = index + 1;
+            byte[] tosend = new byte[size];
+            ByteBuffer.wrap(tosend).put(data, 0, size);
+            peripheralRemote.writeCharacteristic(NORDIC_UART_SERVICE, RX_WRITE, tosend, new WriteCharacteristicListener() {
+                @Override
+                public void onCharacteristicWrite(@NonNull WriteCharacteristicResult result, @NonNull UUID uuid, @NonNull UUID uuid1, @Nullable byte[] bytes) {
+                    if (result == WriteCharacteristicResult.SUCCESS) {
+                        Log.i(TAG, "Sent " + ByteHelper.byteArrayToHexaString(tosend));
+                    } else {
+                        Log.i(TAG, result.name());
+                    }
+                }
+            });
+        }
+
+    }
+
+    private void redPressed() {
+        Log.i(TAG, "Red Pressed");
+    }
+
+    private void yellowPressed() {
+        Log.i(TAG, "Yellow Pressed");
     }
 
 }
