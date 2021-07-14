@@ -1,6 +1,9 @@
 package fr.arnaudguyon.blindtest.bluetooth;
 
 import android.Manifest;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.inventhys.blecentrallib.Central;
+import com.inventhys.blecentrallib.Helper;
 import com.inventhys.blecentrallib.PeripheralRemote;
 import com.inventhys.blecentrallib.connection.ConnectListener;
 import com.inventhys.blecentrallib.connection.ConnectionState;
@@ -20,19 +24,27 @@ import com.inventhys.blecentrallib.scan.ScanListener;
 import com.inventhys.blecentrallib.scan.ScanResult;
 import com.inventhys.blecentrallib.scan.StopScanListener;
 import com.inventhys.blecentrallib.scan.StopScanResult;
+import com.inventhys.blecentrallib.transfer.RegisterForNotificationListener;
+import com.inventhys.blecentrallib.transfer.RegisterForNotificationResult;
+import com.inventhys.blecommonlib.ByteHelper;
 
 import java.util.List;
+import java.util.UUID;
 
 import fr.arnaudguyon.perm.Perm;
 import fr.arnaudguyon.perm.PermResult;
 
-public class BluetoothActivity extends AppCompatActivity {
+public class BluetoothActivity extends AppCompatActivity implements RegisterForNotificationListener {
 
     // TODO: check bluetooth is ON, location is ON
 
     private static final String TAG = "BluetoothActivity";
     private static final int PERMISSIONS_REQUEST = 1;
     private static final String[] PERMISSIONS = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION};
+
+    private static final UUID NORDIC_UART_SERVICE = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+    private static final UUID RX_WRITE = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+    private static final UUID TX_NOTIFY = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 
     private enum State {
         IDLE,
@@ -119,6 +131,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private void connect(@NonNull PeripheralRemote peripheralRemote) {
         state = State.DISCONNECTED;
+
         Central.getInstance().connect(this, peripheralRemote, null, new ConnectListener() {
             @Override
             public void onConnectionChange(@NonNull PeripheralRemote peripheralRemote, @NonNull ConnectionState connectionState) {
@@ -126,6 +139,18 @@ public class BluetoothActivity extends AppCompatActivity {
                     state = State.CONNECTED;
                     // continue
                     toast("Connected, Ready to play");
+                    BluetoothGatt gatt = Helper.getBluetoothGatt(peripheralRemote);
+                    if(gatt != null) {
+                        List<BluetoothGattService> services = gatt.getServices();
+                        for(BluetoothGattService service : services) {
+                            Log.i(TAG, "Service " + service.getUuid().toString());
+                            List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+                            for(BluetoothGattCharacteristic characteristic : characteristics) {
+                                Log.i(TAG, "    Chara " + characteristic.getUuid().toString());
+                            }
+                        }
+                    }
+                    peripheralRemote.registerForNotification(NORDIC_UART_SERVICE, TX_NOTIFY, null, BluetoothActivity.this);
                 } else {
                     if (state == State.CONNECTED) {
                         toast("Disconnected");
@@ -139,6 +164,19 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private void toast(@NonNull String string) {
         Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRegisterForNotification(@NonNull RegisterForNotificationResult registerForNotificationResult, @NonNull UUID uuid, @NonNull UUID uuid1) {
+
+    }
+
+    @Override
+    public void onNotification(@NonNull UUID uuid, @NonNull UUID uuid1, @Nullable byte[] bytes) {
+        if (bytes != null) {
+            String text = ByteHelper.byteArrayToHexaString(bytes);
+            Log.i(TAG, text);
+        }
     }
 
 }
