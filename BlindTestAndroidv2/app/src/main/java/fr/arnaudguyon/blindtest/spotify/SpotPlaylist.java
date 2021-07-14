@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,7 +57,7 @@ public class SpotPlaylist extends JBase {
         return null;
     }
 
-    public void getTracks(@NonNull Context context) {
+    public void requestTracks(@NonNull Context context, @NonNull RequestTracksListener listener) {
 
         String playlistId = getId();
         String url = "https://api.spotify.com/v1/playlists/" + playlistId;
@@ -81,9 +82,13 @@ public class SpotPlaylist extends JBase {
                 String result = "error " + response.getStatusCode();
                 Log.i(SpotConst.TAG, result);
             }
-            //listener.onGetTraksFinished(tracks);
+            listener.onRequestTracksEnded(tracks);
         });
 
+    }
+
+    public interface RequestTracksListener {
+        void onRequestTracksEnded(@Nullable SpotTracks spotTracks);
     }
 
 }

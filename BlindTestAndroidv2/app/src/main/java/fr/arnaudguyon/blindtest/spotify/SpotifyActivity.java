@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import fr.arnaudguyon.blindtest.R;
+import fr.arnaudguyon.blindtest.bluetooth.BluetoothActivity;
 
 public class SpotifyActivity extends AppCompatActivity {
 
@@ -87,6 +88,8 @@ public class SpotifyActivity extends AppCompatActivity {
             public void onGetPlaylistsFinished(@NonNull ArrayList<SpotPlaylist> playlists) {
                 if (!playlists.isEmpty()) {
                     displayPlayLists(playlists);
+                } else {
+                    toast("No Playlist found");
                 }
             }
         });
@@ -101,7 +104,12 @@ public class SpotifyActivity extends AppCompatActivity {
 
         for(SpotPlaylist playlist : playlists) {
             String name = playlist.getName();
-            PlayListItem playListItem = new PlayListItem(playlist);
+            PlayListItem playListItem = new PlayListItem(playlist, new PlayListItem.PlayListListener() {
+                @Override
+                public void onPlayListChosen(@NonNull PlayListItem playListItem) {
+                    retrieveTracks(playListItem.getPlaylist());
+                }
+            });
             adapter.addItem(playListItem);
             Log.i(SpotConst.TAG, "Playlist: " + name);
         }
@@ -109,6 +117,28 @@ public class SpotifyActivity extends AppCompatActivity {
 
     private void toast(@NonNull String string) {
         Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
+    }
+
+    private void retrieveTracks(@NonNull SpotPlaylist spotPlaylist) {
+
+        // TODO: save playlist somewhere, retrieve tracks just before playing
+
+        spotPlaylist.requestTracks(this, new SpotPlaylist.RequestTracksListener() {
+            @Override
+            public void onRequestTracksEnded(@Nullable SpotTracks spotTracks) {
+                if (spotTracks != null) {
+                    startBluetoothActivity();
+                } else {
+                    toast("No Tracks for this playlist: " + spotPlaylist.getName());
+                }
+            }
+        });
+    }
+
+    private void startBluetoothActivity() {
+        Intent intent = BluetoothActivity.createIntent(this);
+        startActivity(intent);
+        finish();
     }
 
 }

@@ -16,10 +16,18 @@ public class PlayListItem extends RecyclerItem {
 
     @NonNull
     private final SpotPlaylist playlist;
+    @NonNull
+    private final PlayListListener listener;
 
-    public PlayListItem(@NonNull SpotPlaylist playlist) {
+    public PlayListItem(@NonNull SpotPlaylist playlist, @NonNull PlayListListener listener) {
         super();
         this.playlist = playlist;
+        this.listener = listener;
+    }
+
+    @NonNull
+    public SpotPlaylist getPlaylist() {
+        return playlist;
     }
 
     @Override
@@ -29,6 +37,12 @@ public class PlayListItem extends RecyclerItem {
 
         Glide.with(holder.picture).load(playlist.getImageUrl(640)).into(holder.picture);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onPlayListChosen(PlayListItem.this);
+            }
+        });
     }
 
     @Override
@@ -48,4 +62,9 @@ public class PlayListItem extends RecyclerItem {
         }
 
     }
+
+    public interface PlayListListener {
+        void onPlayListChosen(@NonNull PlayListItem playListItem);
+    }
+
 }
