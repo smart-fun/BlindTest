@@ -52,6 +52,11 @@ void setup() {
   pantalla.begin(13, 12, 11, 2); // dataPin, clkPin, csPin, numero de matrices de 8x8
   pantalla.rotar(false);
 
+  pantalla.borrar();
+//  //pantalla.escribirFrase("Hi");
+  pantalla.escribirCifra(4, 0);
+  pantalla.escribirCifra(2, 1);
+
   /*lc.shutdown(0,false);
   lc.setIntensity(0,8);
   lc.clearDisplay(0);
@@ -70,11 +75,11 @@ uint8_t receive_index;
 void loop() {
   // put your main code here, to run repeatedly:
 
-  delay(1000);
+  delay(100);
 
-  buf[0] = value;
+//  buf[0] = value;
   //++value;
-  writeData(buf, 1);
+//  writeData(buf, 1);
 
   // uint8_t buf[64];
   // writeData(buf, size);
@@ -82,12 +87,20 @@ void loop() {
   while ( bleuart.available() )
   {
     uint8_t data = readData();
+    receive_data[receive_index] = data;
+    ++receive_index;
+    if (receive_index >= 64) {
+      receive_index = 0;
+    }
+    if (data == 0) {
+      onDataReceived();
+    }
   }
 
-  pantalla.borrar();
-  //pantalla.escribirFrase("Hi");
-  pantalla.escribirCifra(0, 0);
-  pantalla.escribirCifra(4, 1);
+//  pantalla.borrar();
+//  //pantalla.escribirFrase("Hi");
+//  pantalla.escribirCifra(0, 0);
+//  pantalla.escribirCifra(4, 1);
   
   //mtrx.clear();
   //mtrx.circle(3, 3, 2);
@@ -174,4 +187,33 @@ void disconnect_callback(uint16_t conn_handle, uint8_t reason)
 
   Serial.println();
   Serial.print("Disconnected, reason = 0x"); Serial.println(reason, HEX);
+}
+
+void onDataReceived() {
+  uint8_t command = receive_data[0];
+  if ((command == 'R') || (command == 'Y')) {
+    Serial.print("Receive Press");
+    int address = (command == 'R') ? 0 : 1;
+    uint8_t data = -1;
+    uint8_t index = 1;
+    uint64_t value = 0;
+    while (data != 0) {
+      data = receive_data[index];
+      ++index;
+      value *= 26;
+      value += data;
+    }
+    //pantalla.borrar();
+    // value is now 64 bits, to cut into 8x8 bits
+    for(int col=0; col<8; ++col) {
+      uint8_t colValue = value & 0xff;
+      value >>= 8;
+      for(int row=0; row<8; ++row) {
+        boolean on = (colValue & 1);
+        pantalla.setLed(address, row, col, on);
+        colValue >>= 1;
+      }
+    }
+  }
+  receive_index = 0;
 }
