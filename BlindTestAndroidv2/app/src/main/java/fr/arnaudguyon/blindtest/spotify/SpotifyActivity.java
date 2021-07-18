@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import fr.arnaudguyon.blindtest.BlindApplication;
 import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.blindtest.bluetooth.BluetoothActivity;
+import fr.arnaudguyon.blindtest.game.MusicPlayer;
 
 public class SpotifyActivity extends AppCompatActivity {
 
@@ -107,7 +109,7 @@ public class SpotifyActivity extends AppCompatActivity {
             PlayListItem playListItem = new PlayListItem(playlist, new PlayListItem.PlayListListener() {
                 @Override
                 public void onPlayListChosen(@NonNull PlayListItem playListItem) {
-                    retrieveTracks(playListItem.getPlaylist());
+                    createMusicPlayer(playListItem.getPlaylist());
                 }
             });
             adapter.addItem(playListItem);
@@ -119,20 +121,14 @@ public class SpotifyActivity extends AppCompatActivity {
         Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
     }
 
-    private void retrieveTracks(@NonNull SpotPlaylist spotPlaylist) {
-
-        // TODO: save playlist somewhere, retrieve tracks just before playing
-
-        spotPlaylist.requestTracks(this, new SpotPlaylist.RequestTracksListener() {
+    private void createMusicPlayer(@NonNull SpotPlaylist spotPlaylist) {
+        SpotifyPlayer player = new SpotifyPlayer(this, spotPlaylist, new MusicPlayer.MusicPlayerListener() {
             @Override
-            public void onRequestTracksEnded(@Nullable SpotTracks spotTracks) {
-                if (spotTracks != null) {
-                    startBluetoothActivity();
-                } else {
-                    toast("No Tracks for this playlist: " + spotPlaylist.getName());
-                }
+            public void onPlayerReady() {
+                startBluetoothActivity();
             }
         });
+        BlindApplication.setMusicPlayer(player);
     }
 
     private void startBluetoothActivity() {

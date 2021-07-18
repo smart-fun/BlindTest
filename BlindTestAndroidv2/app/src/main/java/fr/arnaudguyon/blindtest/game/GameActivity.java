@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
+import fr.arnaudguyon.blindtest.BlindApplication;
 import fr.arnaudguyon.blindtest.R;
 
 public class GameActivity extends AppCompatActivity {
@@ -17,6 +18,7 @@ public class GameActivity extends AppCompatActivity {
     private Game game = new Game();
 
     protected void onActivityReady(@NonNull ArrayList<Player> players) {
+
         setContentView(R.layout.activity_bluetooth);
 
         findViewById(R.id.redTest).setOnClickListener(new View.OnClickListener() {
@@ -41,6 +43,23 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playTest();
+            }
+        });
+
+        findViewById(R.id.pause).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
+                if (musicPlayer != null) {
+                    musicPlayer.pause();
+                }
+            }
+        });
+
         game.reset(GameActivity.this, players);
     }
 
@@ -56,6 +75,17 @@ public class GameActivity extends AppCompatActivity {
     protected void yellowPressed() {
         Log.i(TAG, "Yellow Pressed");
         game.buttonPressed(GameActivity.this, Team.YELLOW);
+    }
+
+    private void playTest() {
+        MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
+        if (musicPlayer != null) {
+            ArrayList<TrackInfo> tracks = musicPlayer.list();
+            for (TrackInfo trackInfo : tracks) {
+                musicPlayer.play(trackInfo);
+                break;
+            }
+        }
     }
 
 }

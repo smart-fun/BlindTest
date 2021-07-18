@@ -86,6 +86,14 @@ public class SpotPlay {
         });
     }
 
+    public void playTrack(String trackId) {
+        spotifyAppRemote.getPlayerApi().play(trackId);
+    }
+
+    public void pause() {
+        spotifyAppRemote.getPlayerApi().pause();
+    }
+
     public interface SpotConnectListener {
         void onSpotConnection(boolean success);
     }
