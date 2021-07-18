@@ -64,6 +64,10 @@ public class Game {
         return currentTrack;
     }
 
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
     private TrackInfo randomNextTrack() {
         if ((tracks != null) && !tracks.isEmpty()) {
             int index = (int) (Math.random() * tracks.size());
@@ -96,6 +100,18 @@ public class Game {
                 listener.onWaitResponse(team);
                 break;
         }
+    }
+
+    public void goodResponse(Team team) {
+        for (Player player : players) {
+            if (player.getTeam() == team) {
+                player.setScore(player.getScore() + 1);
+            }
+        }
+    }
+
+    public void onResume() {
+        state = State.PLAYING;
     }
 
     private void selectNextIcon(@NonNull Context context, @NonNull Team team) {

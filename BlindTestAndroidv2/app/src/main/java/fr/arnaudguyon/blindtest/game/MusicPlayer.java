@@ -11,6 +11,7 @@ public abstract class MusicPlayer {
 
     public abstract void play(@NonNull TrackInfo trackInfo);
     public abstract void pause();
+    public abstract void resume();
 
     public interface MusicPlayerListener {
         void onPlayerReady();

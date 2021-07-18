@@ -94,6 +94,10 @@ public class SpotPlay {
         spotifyAppRemote.getPlayerApi().pause();
     }
 
+    public void resume() {
+        spotifyAppRemote.getPlayerApi().resume();
+    }
+
     public interface SpotConnectListener {
         void onSpotConnection(boolean success);
     }

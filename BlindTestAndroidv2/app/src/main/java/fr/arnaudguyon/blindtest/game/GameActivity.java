@@ -21,6 +21,10 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
     private TextView titleView;
     private TextView singerView;
+    private View answerLayout;
+    private TextView redScore;
+    private TextView yellowScore;
+    private View teamColor;
 
     protected void onActivityReady(@NonNull ArrayList<Player> players) {
 
@@ -28,6 +32,12 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
         titleView = findViewById(R.id.title);
         singerView = findViewById(R.id.singer);
+        answerLayout = findViewById(R.id.answerLayout);
+        redScore = findViewById(R.id.redScore);
+        yellowScore = findViewById(R.id.yellowScore);
+        teamColor = findViewById(R.id.teamColor);
+
+        answerLayout.setVisibility(View.INVISIBLE);
 
         findViewById(R.id.redTest).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +75,16 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
                 MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
                 if (musicPlayer != null) {
                     musicPlayer.pause();
+                }
+            }
+        });
+
+        findViewById(R.id.resume).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
+                if (musicPlayer != null) {
+                    musicPlayer.resume();
                 }
             }
         });
@@ -127,11 +147,51 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     @Override
     public void onWaitResponse(@NonNull Team team) {
         toast(team.name() + " Pressed button !");
-        MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
+        answerLayout.setVisibility(View.VISIBLE);
+        final MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
             musicPlayer.pause();
         }
-        // TODO: check response and validate or continue
+
+        if (team == Team.RED) {
+            teamColor.setBackgroundColor(0xFFDD0000);
+        } else {
+            teamColor.setBackgroundColor(0xFFDDDD00);
+        }
+
+        answerLayout.findViewById(R.id.correct).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                answerLayout.setVisibility(View.INVISIBLE);
+                game.goodResponse(team);
+                printScores();
+            }
+        });
+        answerLayout.findViewById(R.id.wrong).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                answerLayout.setVisibility(View.INVISIBLE);
+                if (musicPlayer != null) {
+                    musicPlayer.resume();
+                }
+                game.onResume();
+            }
+        });
     }
 
+    private void printScores() {
+        ArrayList<Player> players = game.getPlayers();
+        for (Player player : players) {
+            Team team = player.getTeam();
+            int score = player.getScore();
+            switch(team) {
+                case RED:
+                    redScore.setText("" + score);
+                    break;
+                case YELLOW:
+                    yellowScore.setText("" + score);
+                    break;
+            }
+        }
+    }
 }

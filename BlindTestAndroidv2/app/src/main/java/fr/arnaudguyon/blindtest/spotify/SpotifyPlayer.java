@@ -53,4 +53,9 @@ public class SpotifyPlayer extends MusicPlayer {
         SpotPlay.getInstance().pause();
     }
 
+    @Override
+    public void resume() {
+        SpotPlay.getInstance().resume();
+    }
+
 }
