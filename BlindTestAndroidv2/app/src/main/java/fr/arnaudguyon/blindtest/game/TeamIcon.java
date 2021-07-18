@@ -21,4 +21,19 @@ public enum TeamIcon {
     public int getResId() {
         return resId;
     }
+
+    public TeamIcon next() {
+        for(int i=0; i<TeamIcon.values().length; ++i) {
+            TeamIcon teamIcon = TeamIcon.values()[i];
+            if (teamIcon == this) {
+                ++i;
+                if (i < TeamIcon.values().length) {
+                     return TeamIcon.values()[i];
+                } else {
+                    return TeamIcon.values()[0];
+                }
+            }
+        }
+        return TeamIcon.values()[0];
+    }
 }

@@ -33,7 +33,7 @@ public class ArduinoPlayer extends Player {
     }
 
     @Override
-    public void setIcon(@NonNull Bitmap bitmap) {
+    public void updateDisplay(@NonNull Bitmap bitmap) {
         byte[] message = iconToMessage(bitmap); // put bitmap to 8x8 picture, and converts to 7 bits messages
         sendMessage(message);                   // sends message using BLE
     }

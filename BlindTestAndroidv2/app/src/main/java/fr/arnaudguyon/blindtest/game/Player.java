@@ -22,7 +22,7 @@ public abstract class Player {
         this.score = score;
     }
 
-    public abstract void setIcon(@NonNull Bitmap bitmap);
+    public abstract void updateDisplay(@NonNull Bitmap bitmap);
 
     public abstract void printScore(@NonNull Context context);
 

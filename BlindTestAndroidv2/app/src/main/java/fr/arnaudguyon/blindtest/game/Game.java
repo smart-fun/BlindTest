@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
-import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.blindtest.tools.Bmp;
 
 public class Game {
@@ -35,7 +34,7 @@ public class Game {
             int resId = player.getTeamIcon().getResId();
             Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
             if (bitmap != null) {
-                player.setIcon(bitmap);
+                player.updateDisplay(bitmap);
             }
         }
     }
@@ -53,15 +52,40 @@ public class Game {
 
     public void buttonPressed(@NonNull Context context, @NonNull Team team) {
         Log.i(TAG, "buttonPressed Team " + team.name());
-        for (Player player : players) {
-            int resId = (player.getTeam() == team) ? player.getTeamIcon().getResId() : R.drawable.none;
+        if (state == State.CHOOSE_ICON) {
+            selectNextIcon(context, team);
+        }
+//        for (Player player : players) {
+//            int resId = (player.getTeam() == team) ? player.getTeamIcon().getResId() : R.drawable.none;
+//            Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
+//            if (bitmap != null) {
+//                player.setIcon(bitmap);
+//            }
+//        }
+    }
+
+    private void selectNextIcon(@NonNull Context context, @NonNull Team team) {
+        TeamIcon teamIcon = null;
+        for(Player player : players) {
+            if (player.getTeam() == team) {
+                teamIcon = player.getTeamIcon().next();
+                break;
+            }
+        }
+        // apply to all players of the team
+        if (teamIcon != null) {
+            int resId = teamIcon.getResId();
             Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
-            if (bitmap != null) {
-                player.setIcon(bitmap);
+            for(Player player : players) {
+                if (player.getTeam() == team) {
+                    player.setTeamIcon(teamIcon);
+                    if (bitmap != null) {
+                        player.updateDisplay(bitmap);
+                    }
+                }
             }
         }
     }
-
 
 
 }

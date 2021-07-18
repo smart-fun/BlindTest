@@ -11,12 +11,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.inventhys.blecentrallib.Central;
 import com.inventhys.blecentrallib.Helper;
@@ -37,15 +35,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.blindtest.game.ArduinoPlayer;
-import fr.arnaudguyon.blindtest.game.Game;
+import fr.arnaudguyon.blindtest.game.GameActivity;
 import fr.arnaudguyon.blindtest.game.Player;
 import fr.arnaudguyon.blindtest.game.Team;
 import fr.arnaudguyon.perm.Perm;
 import fr.arnaudguyon.perm.PermResult;
 
-public class BluetoothActivity extends AppCompatActivity implements RegisterForNotificationListener, MtuUpdateListener, PhyUpdateListener {
+public class BluetoothActivity extends GameActivity implements RegisterForNotificationListener, MtuUpdateListener, PhyUpdateListener {
 
     // TODO: check bluetooth is ON, location is ON
 
@@ -64,8 +61,6 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
     private State state = State.IDLE;
     private PeripheralRemote peripheralRemote;
     private Handler handler = new Handler();
-    private Player playerRed, playerYellow;
-    private Game game = new Game();
 
     public static Intent createIntent(@NonNull Context context) {
         Intent intent = new Intent(context, BluetoothActivity.class);
@@ -168,18 +163,11 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
                     Central.getInstance().setPreferredPhy(peripheralRemote, BluetoothDevice.PHY_LE_2M_MASK, BluetoothDevice.PHY_OPTION_NO_PREFERRED);
                     peripheralRemote.setCallbackThread(BleConst.NORDIC_UART_SERVICE, BleConst.TX_NOTIFY, handler);
                     peripheralRemote.registerForNotification(BleConst.NORDIC_UART_SERVICE, BleConst.TX_NOTIFY, null, BluetoothActivity.this);
-                    playerRed = new ArduinoPlayer(Team.RED, peripheralRemote);
-                    playerYellow = new ArduinoPlayer(Team.YELLOW, peripheralRemote);
-                    ArrayList<Player> players = new ArrayList<>();
-                    players.add(playerRed);
-                    players.add(playerYellow);
-                    game.reset(BluetoothActivity.this, players);
                 } else {
                     if (state == State.CONNECTED) {
                         toast("Disconnected");
-                        // TODO: stop / restart something?
                         state = State.DISCONNECTED;
-                        game.stop();
+                        onActivityNotReady();
                     }
                 }
             }
@@ -193,30 +181,13 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
     @Override
     public void onRegisterForNotification(@NonNull RegisterForNotificationResult result, @NonNull UUID uuid, @NonNull UUID uuid1) {
 
+        Player playerRed = new ArduinoPlayer(Team.RED, peripheralRemote);
+        Player playerYellow = new ArduinoPlayer(Team.YELLOW, peripheralRemote);
+        ArrayList<Player> players = new ArrayList<>();
+        players.add(playerRed);
+        players.add(playerYellow);
+        onActivityReady(players);
 
-        setContentView(R.layout.activity_bluetooth);
-
-        findViewById(R.id.redTest).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redPressed();
-
-            }
-        });
-
-        findViewById(R.id.yellowTest).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                yellowPressed();
-            }
-        });
-
-        findViewById(R.id.startGame).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                game.start(BluetoothActivity.this);
-            }
-        });
 
     }
 
@@ -235,15 +206,7 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
         }
     }
 
-    private void redPressed() {
-        Log.i(TAG, "Red Pressed");
-        game.buttonPressed(BluetoothActivity.this, Team.RED);
-    }
 
-    private void yellowPressed() {
-        Log.i(TAG, "Yellow Pressed");
-        game.buttonPressed(BluetoothActivity.this, Team.YELLOW);
-    }
 
     @Override
     public void onMtuUpdate(@NonNull PeripheralRemote peripheralRemote, int mtu) {
