@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 
 import fr.arnaudguyon.blindtest.BlindApplication;
+import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.blindtest.tools.Bmp;
 
 public class Game {
@@ -48,9 +49,7 @@ public class Game {
     public void start(@NonNull Context context, @NonNull GameListener listener) {
         this.listener = listener;
         state = State.WAITING;
-        for (Player player : players) {
-            player.printScore(context);
-        }
+        printScores(context);
         MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
             tracks = musicPlayer.list();
@@ -98,6 +97,7 @@ public class Game {
             case PLAYING:
                 state = State.WAITING;
                 listener.onWaitResponse(team);
+                displayTeamPressIcon(context, team);
                 break;
         }
     }
@@ -112,6 +112,33 @@ public class Game {
 
     public void onResume() {
         state = State.PLAYING;
+    }
+
+    private void displayTeamPressIcon(@NonNull Context context, @NonNull Team team) {
+        Bitmap bitmapNone = Bmp.resIdToBitmap(context, R.drawable.none);
+        TeamIcon teamIcon = null;
+        for (Player player : players) {
+            if (player.getTeam() == team) {
+                teamIcon = player.getTeamIcon();
+                break;
+            }
+        }
+        if (teamIcon != null) {
+            int resId = teamIcon.getResId();
+            Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
+            for (Player player : players) {
+                if (player.getTeam() == team) {
+                    if (bitmap != null) {
+                        player.updateDisplay(bitmap);
+                    }
+                } else {
+                    if (bitmapNone != null) {
+                        player.updateDisplay(bitmapNone);
+                    }
+                }
+            }
+        }
+
     }
 
     private void selectNextIcon(@NonNull Context context, @NonNull Team team) {
@@ -134,6 +161,12 @@ public class Game {
                     }
                 }
             }
+        }
+    }
+
+    public void printScores(@NonNull Context context) {
+        for (Player player : players) {
+            player.printScore(context);
         }
     }
 

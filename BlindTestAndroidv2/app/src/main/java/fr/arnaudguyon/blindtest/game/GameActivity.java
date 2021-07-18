@@ -165,6 +165,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
                 answerLayout.setVisibility(View.INVISIBLE);
                 game.goodResponse(team);
                 printScores();
+                game.printScores(GameActivity.this);
             }
         });
         answerLayout.findViewById(R.id.wrong).setOnClickListener(new View.OnClickListener() {
@@ -174,6 +175,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
                 if (musicPlayer != null) {
                     musicPlayer.resume();
                 }
+                game.printScores(GameActivity.this);
                 game.onResume();
             }
         });
