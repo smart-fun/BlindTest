@@ -12,13 +12,13 @@ MatrizLed pantalla;
 
 
 /*
- Now we need a LedControl to work with.
+  Now we need a LedControl to work with.
  ***** These pin numbers will probably not work with your hardware *****
- pin 12 is connected to the DataIn 
- pin 11 is connected to the CLK 
- pin 10 is connected to LOAD 
- We have only a single MAX72XX.
- */
+  pin 12 is connected to the DataIn
+  pin 11 is connected to the CLK
+  pin 10 is connected to LOAD
+  We have only a single MAX72XX.
+*/
 //LedControl lc=LedControl(13,12,11,2);
 
 const byte interruptPin = 16;
@@ -53,16 +53,16 @@ void setup() {
   pantalla.rotar(false);
 
   pantalla.borrar();
-//  //pantalla.escribirFrase("Hi");
+  //  //pantalla.escribirFrase("Hi");
   pantalla.escribirCifra(4, 0);
   pantalla.escribirCifra(2, 1);
 
   /*lc.shutdown(0,false);
-  lc.setIntensity(0,8);
-  lc.clearDisplay(0);
-  lc.shutdown(1,false);
-  lc.setIntensity(1,8);
-  lc.clearDisplay(1);
+    lc.setIntensity(0,8);
+    lc.clearDisplay(0);
+    lc.shutdown(1,false);
+    lc.setIntensity(1,8);
+    lc.clearDisplay(1);
   */
 }
 
@@ -77,9 +77,9 @@ void loop() {
 
   delay(100);
 
-//  buf[0] = value;
+  //  buf[0] = value;
   //++value;
-//  writeData(buf, 1);
+  //  writeData(buf, 1);
 
   // uint8_t buf[64];
   // writeData(buf, size);
@@ -97,26 +97,26 @@ void loop() {
     }
   }
 
-//  pantalla.borrar();
-//  //pantalla.escribirFrase("Hi");
-//  pantalla.escribirCifra(0, 0);
-//  pantalla.escribirCifra(4, 1);
-  
+  //  pantalla.borrar();
+  //  //pantalla.escribirFrase("Hi");
+  //  pantalla.escribirCifra(0, 0);
+  //  pantalla.escribirCifra(4, 1);
+
   //mtrx.clear();
   //mtrx.circle(3, 3, 2);
   //mtrx.line(0, 0, 15, 7);
   //mtrx.update();
-/*
-lc.clearDisplay(0);
-lc.clearDisplay(1);
+  /*
+    lc.clearDisplay(0);
+    lc.clearDisplay(1);
 
-  lc.setLed(0,1,1,true);
-  lc.setLed(0,2,2,true);
-  lc.setLed(0,3,3,true);
+    lc.setLed(0,1,1,true);
+    lc.setLed(0,2,2,true);
+    lc.setLed(0,3,3,true);
 
-  lc.setLed(1,1,1,true);
-  lc.setLed(1,2,2,true);
-  lc.setLed(1,3,3,true);
+    lc.setLed(1,1,1,true);
+    lc.setLed(1,2,2,true);
+    lc.setLed(1,3,3,true);
   */
 }
 
@@ -192,28 +192,50 @@ void disconnect_callback(uint16_t conn_handle, uint8_t reason)
 void onDataReceived() {
   uint8_t command = receive_data[0];
   if ((command == 'R') || (command == 'Y')) {
-    Serial.print("Receive Press");
+    Serial.println("Receive Press");
     int address = (command == 'R') ? 0 : 1;
+
     uint8_t data = -1;
     uint8_t index = 1;
-    uint64_t value = 0;
+    int x = 0;
+    int y = 7;
     while (data != 0) {
       data = receive_data[index];
       ++index;
-      value *= 26;
-      value += data;
-    }
-    //pantalla.borrar();
-    // value is now 64 bits, to cut into 8x8 bits
-    for(int col=0; col<8; ++col) {
-      uint8_t colValue = value & 0xff;
-      value >>= 8;
-      for(int row=0; row<8; ++row) {
-        boolean on = (colValue & 1);
-        pantalla.setLed(address, row, col, on);
-        colValue >>= 1;
+      int temp = data & 0x7F; // remove high bit
+      for (int b = 6; b >= 0; --b) {
+        boolean on = ((temp >> b) & 1);
+        pantalla.setLed(address, x, y, on);
+        if (on) {
+          Serial.print("pixel ");
+          Serial.print(x);
+          Serial.print(" ");
+          Serial.println(y);
+        }
+        ++x;
+        if (x > 7) {
+          x = 0;
+          --y;
+        }
       }
     }
   }
+
   receive_index = 0;
+}
+
+void print_uint64_t(uint64_t num) {
+
+  char rev[128];
+  char *p = rev + 1;
+
+  while (num > 0) {
+    *p++ = '0' + ( num % 10);
+    num /= 10;
+  }
+  p--;
+  /*Print the number which is now in reverse*/
+  while (p > rev) {
+    Serial.print(*p--);
+  }
 }

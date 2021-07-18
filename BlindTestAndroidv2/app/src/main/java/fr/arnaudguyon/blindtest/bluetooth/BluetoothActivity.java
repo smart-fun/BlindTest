@@ -25,6 +25,7 @@ import com.inventhys.blecentrallib.connection.ConnectListener;
 import com.inventhys.blecentrallib.connection.ConnectOptions;
 import com.inventhys.blecentrallib.connection.ConnectionState;
 import com.inventhys.blecentrallib.connection.MtuUpdateListener;
+import com.inventhys.blecentrallib.connection.PhyUpdateListener;
 import com.inventhys.blecentrallib.scan.ScanListener;
 import com.inventhys.blecentrallib.scan.ScanResult;
 import com.inventhys.blecentrallib.scan.StopScanListener;
@@ -36,24 +37,25 @@ import com.inventhys.blecentrallib.transfer.WriteCharacteristicResult;
 import com.inventhys.blecommonlib.ByteHelper;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import fr.arnaudguyon.blindtest.R;
+import fr.arnaudguyon.blindtest.game.ArduinoPlayer;
+import fr.arnaudguyon.blindtest.game.Game;
+import fr.arnaudguyon.blindtest.game.Player;
+import fr.arnaudguyon.blindtest.game.Team;
 import fr.arnaudguyon.perm.Perm;
 import fr.arnaudguyon.perm.PermResult;
 
-public class BluetoothActivity extends AppCompatActivity implements RegisterForNotificationListener, MtuUpdateListener {
+public class BluetoothActivity extends AppCompatActivity implements RegisterForNotificationListener, MtuUpdateListener, PhyUpdateListener {
 
     // TODO: check bluetooth is ON, location is ON
 
     private static final String TAG = "BluetoothActivity";
     private static final int PERMISSIONS_REQUEST = 1;
     private static final String[] PERMISSIONS = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION};
-
-    private static final UUID NORDIC_UART_SERVICE = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
-    private static final UUID RX_WRITE = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
-    private static final UUID TX_NOTIFY = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 
     private enum State {
         IDLE,
@@ -66,6 +68,8 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
     private State state = State.IDLE;
     private PeripheralRemote peripheralRemote;
     private Handler handler = new Handler();
+    private Player playerRed, playerYellow;
+    private Game game = new Game();
 
     public static Intent createIntent(@NonNull Context context) {
         Intent intent = new Intent(context, BluetoothActivity.class);
@@ -163,15 +167,23 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
                         }
                     }
                     Central.getInstance().updateMtuListener(peripheralRemote, BluetoothActivity.this);
+                    Central.getInstance().updatePhyListener(peripheralRemote, BluetoothActivity.this);
                     Central.getInstance().changeMtuSize(BluetoothActivity.this, peripheralRemote, 255);
                     Central.getInstance().setPreferredPhy(peripheralRemote, BluetoothDevice.PHY_LE_2M_MASK, BluetoothDevice.PHY_OPTION_NO_PREFERRED);
-                    peripheralRemote.setCallbackThread(NORDIC_UART_SERVICE, TX_NOTIFY, handler);
-                    peripheralRemote.registerForNotification(NORDIC_UART_SERVICE, TX_NOTIFY, null, BluetoothActivity.this);
+                    peripheralRemote.setCallbackThread(BleConst.NORDIC_UART_SERVICE, BleConst.TX_NOTIFY, handler);
+                    peripheralRemote.registerForNotification(BleConst.NORDIC_UART_SERVICE, BleConst.TX_NOTIFY, null, BluetoothActivity.this);
+                    playerRed = new ArduinoPlayer(Team.RED, peripheralRemote);
+                    playerYellow = new ArduinoPlayer(Team.YELLOW, peripheralRemote);
+                    ArrayList<Player> players = new ArrayList<>();
+                    players.add(playerRed);
+                    players.add(playerYellow);
+                    game.start(BluetoothActivity.this, players);
                 } else {
                     if (state == State.CONNECTED) {
                         toast("Disconnected");
                         // TODO: stop / restart something?
                         state = State.DISCONNECTED;
+                        game.stop();
                     }
                 }
             }
@@ -237,7 +249,7 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
             int size = index + 1;
             byte[] tosend = new byte[size];
             ByteBuffer.wrap(tosend).put(data, 0, size);
-            peripheralRemote.writeCharacteristic(NORDIC_UART_SERVICE, RX_WRITE, tosend, new WriteCharacteristicListener() {
+            peripheralRemote.writeCharacteristic(BleConst.NORDIC_UART_SERVICE, BleConst.RX_WRITE, tosend, new WriteCharacteristicListener() {
                 @Override
                 public void onCharacteristicWrite(@NonNull WriteCharacteristicResult result, @NonNull UUID uuid, @NonNull UUID uuid1, @Nullable byte[] bytes) {
                     if (result == WriteCharacteristicResult.SUCCESS) {
@@ -262,6 +274,11 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
     @Override
     public void onMtuUpdate(@NonNull PeripheralRemote peripheralRemote, int mtu) {
         Log.i(TAG, "Mtu Update " + mtu);
+    }
+
+    @Override
+    public void onPhyUpdate(@NonNull PeripheralRemote peripheralRemote, int txPhy, int rxPhy) {
+        Log.i(TAG, "Phy TX: " + txPhy + ", Phy RX: " + rxPhy);
     }
 
 }
