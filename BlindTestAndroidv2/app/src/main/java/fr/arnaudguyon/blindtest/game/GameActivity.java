@@ -2,6 +2,7 @@ package fr.arnaudguyon.blindtest.game;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,6 +61,13 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choseNextTrack();
+            }
+        });
+
         game.reset(GameActivity.this, players);
     }
 
@@ -80,14 +88,29 @@ public class GameActivity extends AppCompatActivity {
     private void playTest() {
         MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
-            ArrayList<TrackInfo> tracks = musicPlayer.list();
-            int rand = (int) (Math.random() * tracks.size());
-            if (rand < tracks.size()) {
-                TrackInfo trackInfo = tracks.get(rand);
+            TrackInfo trackInfo = game.getCurrentTrack();
+            if (trackInfo != null) {
                 Log.i(TAG, "Play " + trackInfo.getTitle());
                 musicPlayer.play(trackInfo);
+                toast("Play " + trackInfo.getTitle());
+            } else {
+                // TODO: end of game ?
+                toast("Play error");
             }
         }
+    }
+
+    private void choseNextTrack() {
+        TrackInfo trackInfo = game.nextTrack();
+        if (trackInfo != null) {
+            toast("Chose " + trackInfo.getTitle());
+        } else {
+            toast("No Track to play");
+        }
+    }
+
+    private void toast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
 }

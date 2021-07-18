@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
+import fr.arnaudguyon.blindtest.BlindApplication;
 import fr.arnaudguyon.blindtest.tools.Bmp;
 
 public class Game {
@@ -25,6 +26,9 @@ public class Game {
 
     @NonNull
     private final ArrayList<Player> players = new ArrayList<>();
+
+    private ArrayList<TrackInfo> tracks;
+    private TrackInfo currentTrack;
 
     public void reset(@NonNull Context context, @NonNull ArrayList<Player> players) {
         this.players.clear();
@@ -44,6 +48,30 @@ public class Game {
         for (Player player : players) {
             player.printScore(context);
         }
+        MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
+        if (musicPlayer != null) {
+            tracks = musicPlayer.list();
+            currentTrack = randomNextTrack();
+        } else {
+            // TODO : error
+        }
+    }
+
+    public TrackInfo getCurrentTrack() {
+        return currentTrack;
+    }
+
+    private TrackInfo randomNextTrack() {
+        if ((tracks != null) && !tracks.isEmpty()) {
+            int index = (int) (Math.random() * tracks.size());
+            currentTrack = tracks.get(index);
+            tracks.remove(index);
+        }
+        return currentTrack;
+    }
+
+    public TrackInfo nextTrack() {
+        return randomNextTrack();
     }
 
     public void stop() {
@@ -66,7 +94,7 @@ public class Game {
 
     private void selectNextIcon(@NonNull Context context, @NonNull Team team) {
         TeamIcon teamIcon = null;
-        for(Player player : players) {
+        for (Player player : players) {
             if (player.getTeam() == team) {
                 teamIcon = player.getTeamIcon().next();
                 break;
@@ -76,7 +104,7 @@ public class Game {
         if (teamIcon != null) {
             int resId = teamIcon.getResId();
             Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
-            for(Player player : players) {
+            for (Player player : players) {
                 if (player.getTeam() == team) {
                     player.setTeamIcon(teamIcon);
                     if (bitmap != null) {
