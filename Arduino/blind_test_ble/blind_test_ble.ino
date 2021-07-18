@@ -4,7 +4,8 @@
 BLEUart bleuart; // uart over ble
 MatrizLed pantalla;
 
-const byte interruptPin = 16;
+const byte interruptPinRed = 15;
+const byte interruptPinYellow = 16;
 
 void setup() {
   Serial.begin(115200);
@@ -14,8 +15,10 @@ void setup() {
   while ( !Serial ) yield();
 #endif
 
-  pinMode(interruptPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, CHANGE);
+  pinMode(interruptPinRed, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPinRed), onRedPressed, FALLING);
+  pinMode(interruptPinYellow, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPinYellow), onYellowPressed, FALLING);
 
   Bluefruit.autoConnLed(true);
   Bluefruit.configPrphBandwidth(BANDWIDTH_MAX);
@@ -48,10 +51,13 @@ uint8_t buf[64];
 uint8_t receive_data[64];
 uint8_t receive_index;
 
+boolean redPressed = false;
+boolean yellowPressed = false;
+
 void loop() {
   // put your main code here, to run repeatedly:
 
-  delay(100);
+  delay(50);
 
   while ( bleuart.available() )
   {
@@ -64,6 +70,17 @@ void loop() {
     if (data == 0) {
       onDataReceived();
     }
+  }
+
+  if (redPressed) {
+    sendRedPressed();
+    delay(100);
+    redPressed = false;
+  }
+  if (yellowPressed) {
+    sendYellowPressed();
+    delay(100);
+    yellowPressed = false;
   }
 
 }
@@ -96,8 +113,30 @@ void startAdv(void)
   Bluefruit.Advertising.start(0);                // 0 = Don't stop advertising after n seconds
 }
 
-void blink() {
-  ++value;
+void onRedPressed() {
+  if (!redPressed && !yellowPressed) {
+    redPressed = true;
+  }
+}
+
+void onYellowPressed() {
+  if (!redPressed && !yellowPressed) {
+    yellowPressed = true;
+  }
+}
+
+void sendRedPressed() {
+  uint8_t buf[2];
+  buf[0] = 'r';
+  buf[1]= 0;
+  writeData(buf, 2);
+}
+
+void sendYellowPressed() {
+  uint8_t buf[2];
+  buf[0] = 'y';
+  buf[1]= 0;
+  writeData(buf, 2);
 }
 
 void writeData(uint8_t buf[], uint8_t size) {
