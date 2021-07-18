@@ -80,6 +80,7 @@ public class ArduinoPlayer extends Player {
                 }
             }
         }
+        lineValue <<= (7 - bit);
         data[index] = (byte) (lineValue | 0x80);
         data[index + 1] = 0;
         return data;
