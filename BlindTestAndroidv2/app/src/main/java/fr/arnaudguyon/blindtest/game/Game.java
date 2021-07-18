@@ -2,14 +2,14 @@ package fr.arnaudguyon.blindtest.game;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+
+import fr.arnaudguyon.blindtest.R;
+import fr.arnaudguyon.blindtest.tools.Bmp;
 
 public class Game {
 
@@ -17,7 +17,8 @@ public class Game {
 
     private enum State {
         NO_STARTED,
-        CHOOSE_ICON
+        CHOOSE_ICON,
+        WAITING
     }
 
     @NonNull
@@ -26,16 +27,23 @@ public class Game {
     @NonNull
     private final ArrayList<Player> players = new ArrayList<>();
 
-    public void start(@NonNull Context context, @NonNull ArrayList<Player> players) {
+    public void reset(@NonNull Context context, @NonNull ArrayList<Player> players) {
         this.players.clear();
         this.players.addAll(players);
         state = State.CHOOSE_ICON;
         for (Player player : this.players) {
             int resId = player.getTeamIcon().getResId();
-            Bitmap bitmap = resIdToBitmap(context, resId);
+            Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
             if (bitmap != null) {
                 player.setIcon(bitmap);
             }
+        }
+    }
+
+    public void start(@NonNull Context context) {
+        state = State.WAITING;
+        for (Player player : players) {
+            player.printScore(context);
         }
     }
 
@@ -43,13 +51,17 @@ public class Game {
 
     }
 
-    public void buttonPressed(@NonNull Team team) {
+    public void buttonPressed(@NonNull Context context, @NonNull Team team) {
         Log.i(TAG, "buttonPressed Team " + team.name());
+        for (Player player : players) {
+            int resId = (player.getTeam() == team) ? player.getTeamIcon().getResId() : R.drawable.none;
+            Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
+            if (bitmap != null) {
+                player.setIcon(bitmap);
+            }
+        }
     }
 
-    @Nullable
-    private Bitmap resIdToBitmap(@NonNull Context context, @DrawableRes int resId) {
-        return BitmapFactory.decodeResource(context.getResources(), resId);
-    }
+
 
 }

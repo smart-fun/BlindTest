@@ -1,8 +1,10 @@
 package fr.arnaudguyon.blindtest.game;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -13,9 +15,14 @@ import com.inventhys.blecommonlib.ByteHelper;
 
 import java.util.UUID;
 
+import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.blindtest.bluetooth.BleConst;
+import fr.arnaudguyon.blindtest.tools.Bmp;
 
 public class ArduinoPlayer extends Player {
+
+    @DrawableRes
+    private final int numbers[] = {R.drawable.n0, R.drawable.n1, R.drawable.n2, R.drawable.n3, R.drawable.n4, R.drawable.n5, R.drawable.n6, R.drawable.n7, R.drawable.n8, R.drawable.n9};
 
     @NonNull
     private final PeripheralRemote peripheralRemote;
@@ -29,6 +36,16 @@ public class ArduinoPlayer extends Player {
     public void setIcon(@NonNull Bitmap bitmap) {
         byte[] message = iconToMessage(bitmap); // put bitmap to 8x8 picture, and converts to 7 bits messages
         sendMessage(message);                   // sends message using BLE
+    }
+
+    @Override
+    public void printScore(@NonNull Context context) {
+        @DrawableRes int resId = numbers[getScore() % 9];
+        Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
+        if (bitmap != null) {
+            byte[] message = iconToMessage(bitmap);
+            sendMessage(message);
+        }
     }
 
     private byte[] iconToMessage(@NonNull Bitmap bitmap) {
@@ -51,7 +68,7 @@ public class ArduinoPlayer extends Player {
                 lineValue <<= 1;
                 if (red + green + blue > 128 * 3) {
                     lineValue += 1;
-                    Log.i(BleConst.TAG, "pix " + x + ", " + y);
+                    //Log.i(BleConst.TAG, "pix " + x + ", " + y);
                 }
                 ++bit;
                 if (bit >= 7) {
@@ -63,7 +80,7 @@ public class ArduinoPlayer extends Player {
                 }
             }
         }
-        data[index] = (byte)(lineValue | 0x80);
+        data[index] = (byte) (lineValue | 0x80);
         data[index + 1] = 0;
         return data;
     }

@@ -22,7 +22,6 @@ import com.inventhys.blecentrallib.Central;
 import com.inventhys.blecentrallib.Helper;
 import com.inventhys.blecentrallib.PeripheralRemote;
 import com.inventhys.blecentrallib.connection.ConnectListener;
-import com.inventhys.blecentrallib.connection.ConnectOptions;
 import com.inventhys.blecentrallib.connection.ConnectionState;
 import com.inventhys.blecentrallib.connection.MtuUpdateListener;
 import com.inventhys.blecentrallib.connection.PhyUpdateListener;
@@ -32,11 +31,8 @@ import com.inventhys.blecentrallib.scan.StopScanListener;
 import com.inventhys.blecentrallib.scan.StopScanResult;
 import com.inventhys.blecentrallib.transfer.RegisterForNotificationListener;
 import com.inventhys.blecentrallib.transfer.RegisterForNotificationResult;
-import com.inventhys.blecentrallib.transfer.WriteCharacteristicListener;
-import com.inventhys.blecentrallib.transfer.WriteCharacteristicResult;
 import com.inventhys.blecommonlib.ByteHelper;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -177,7 +173,7 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
                     ArrayList<Player> players = new ArrayList<>();
                     players.add(playerRed);
                     players.add(playerYellow);
-                    game.start(BluetoothActivity.this, players);
+                    game.reset(BluetoothActivity.this, players);
                 } else {
                     if (state == State.CONNECTED) {
                         toast("Disconnected");
@@ -203,14 +199,22 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
         findViewById(R.id.redTest).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendRandom64('R');
+                redPressed();
+
             }
         });
 
         findViewById(R.id.yellowTest).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendRandom64('Y');
+                yellowPressed();
+            }
+        });
+
+        findViewById(R.id.startGame).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                game.start(BluetoothActivity.this);
             }
         });
 
@@ -231,44 +235,14 @@ public class BluetoothActivity extends AppCompatActivity implements RegisterForN
         }
     }
 
-    private void sendRandom64(char prefix) {
-        if (peripheralRemote != null) {
-            byte[] data = new byte[20];
-            data[0] = (byte) prefix;
-            int index = 0;
-            long rnd = (long) (Math.random() * Long.MAX_VALUE);
-            while (rnd > 0) {
-                long value = rnd % 26;
-                ++index;
-                byte b = (byte) ('a' + value);
-                data[index] = b;
-                rnd /= 26;
-            }
-            ++index;
-            data[index] = 0;
-            int size = index + 1;
-            byte[] tosend = new byte[size];
-            ByteBuffer.wrap(tosend).put(data, 0, size);
-            peripheralRemote.writeCharacteristic(BleConst.NORDIC_UART_SERVICE, BleConst.RX_WRITE, tosend, new WriteCharacteristicListener() {
-                @Override
-                public void onCharacteristicWrite(@NonNull WriteCharacteristicResult result, @NonNull UUID uuid, @NonNull UUID uuid1, @Nullable byte[] bytes) {
-                    if (result == WriteCharacteristicResult.SUCCESS) {
-                        Log.i(TAG, "Sent " + ByteHelper.byteArrayToHexaString(tosend));
-                    } else {
-                        Log.i(TAG, result.name());
-                    }
-                }
-            });
-        }
-
-    }
-
     private void redPressed() {
         Log.i(TAG, "Red Pressed");
+        game.buttonPressed(BluetoothActivity.this, Team.RED);
     }
 
     private void yellowPressed() {
         Log.i(TAG, "Yellow Pressed");
+        game.buttonPressed(BluetoothActivity.this, Team.YELLOW);
     }
 
     @Override

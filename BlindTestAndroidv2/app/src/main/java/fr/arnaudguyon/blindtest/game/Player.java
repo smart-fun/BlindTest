@@ -1,5 +1,6 @@
 package fr.arnaudguyon.blindtest.game;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
@@ -17,27 +18,29 @@ public abstract class Player {
         this.team = team;
     }
 
-    public void setScore(int score) {
+    public final void setScore(int score) {
         this.score = score;
     }
 
     public abstract void setIcon(@NonNull Bitmap bitmap);
 
+    public abstract void printScore(@NonNull Context context);
+
     @NonNull
-    public Team getTeam() {
+    public final Team getTeam() {
         return team;
     }
 
-    public int getScore() {
+    public final int getScore() {
         return score;
     }
 
     @NonNull
-    public TeamIcon getTeamIcon() {
+    public final TeamIcon getTeamIcon() {
         return teamIcon;
     }
 
-    public void setTeamIcon(@NonNull TeamIcon teamIcon) {
+    public final void setTeamIcon(@NonNull TeamIcon teamIcon) {
         this.teamIcon = teamIcon;
     }
 }

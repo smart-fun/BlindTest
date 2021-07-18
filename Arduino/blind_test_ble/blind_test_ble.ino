@@ -1,25 +1,8 @@
 #include <bluefruit.h>
-//#include <Adafruit_LittleFS.h>
-//#include <InternalFileSystem.h>
 #include "matrix88.h"
-//#include <GyverMAX7219.h> // https://github.com/GyverLibs/GyverMAX7219
-//#include "LedControl.h"
 
 BLEUart bleuart; // uart over ble
 MatrizLed pantalla;
-//MAX7219 < 2, 1, 11, 13, 12> mtrx; // W, H, CS, Data, Clck
-//MAX7219 < 2, 1, 11> mtrx; // W, H, CS, Data, Clck
-
-
-/*
-  Now we need a LedControl to work with.
- ***** These pin numbers will probably not work with your hardware *****
-  pin 12 is connected to the DataIn
-  pin 11 is connected to the CLK
-  pin 10 is connected to LOAD
-  We have only a single MAX72XX.
-*/
-//LedControl lc=LedControl(13,12,11,2);
 
 const byte interruptPin = 16;
 
@@ -57,13 +40,6 @@ void setup() {
   pantalla.escribirCifra(4, 0);
   pantalla.escribirCifra(2, 1);
 
-  /*lc.shutdown(0,false);
-    lc.setIntensity(0,8);
-    lc.clearDisplay(0);
-    lc.shutdown(1,false);
-    lc.setIntensity(1,8);
-    lc.clearDisplay(1);
-  */
 }
 
 uint8_t value = 0;
@@ -76,13 +52,6 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   delay(100);
-
-  //  buf[0] = value;
-  //++value;
-  //  writeData(buf, 1);
-
-  // uint8_t buf[64];
-  // writeData(buf, size);
 
   while ( bleuart.available() )
   {
@@ -97,27 +66,6 @@ void loop() {
     }
   }
 
-  //  pantalla.borrar();
-  //  //pantalla.escribirFrase("Hi");
-  //  pantalla.escribirCifra(0, 0);
-  //  pantalla.escribirCifra(4, 1);
-
-  //mtrx.clear();
-  //mtrx.circle(3, 3, 2);
-  //mtrx.line(0, 0, 15, 7);
-  //mtrx.update();
-  /*
-    lc.clearDisplay(0);
-    lc.clearDisplay(1);
-
-    lc.setLed(0,1,1,true);
-    lc.setLed(0,2,2,true);
-    lc.setLed(0,3,3,true);
-
-    lc.setLed(1,1,1,true);
-    lc.setLed(1,2,2,true);
-    lc.setLed(1,3,3,true);
-  */
 }
 
 void startAdv(void)
@@ -206,12 +154,12 @@ void onDataReceived() {
       for (int b = 6; b >= 0; --b) {
         boolean on = ((temp >> b) & 1);
         pantalla.setLed(address, x, y, on);
-        if (on) {
-          Serial.print("pixel ");
-          Serial.print(x);
-          Serial.print(" ");
-          Serial.println(y);
-        }
+//        if (on) {
+//          Serial.print("pixel ");
+//          Serial.print(x);
+//          Serial.print(" ");
+//          Serial.println(y);
+//        }
         ++x;
         if (x > 7) {
           x = 0;

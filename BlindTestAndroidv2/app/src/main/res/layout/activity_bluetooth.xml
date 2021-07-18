@@ -16,4 +16,10 @@
         android:layout_height="wrap_content"
         android:text="YELLOW" />
 
+    <Button
+        android:id="@+id/startGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Game"/>
+
 </LinearLayout>
