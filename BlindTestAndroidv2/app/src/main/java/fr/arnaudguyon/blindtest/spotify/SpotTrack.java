@@ -63,6 +63,7 @@ public class SpotTrack extends JBase {
 
     public String getMusicUrl() {
         return getString("uri");
+        //return "spotify:track:" + getString("id");
     }
 
 }

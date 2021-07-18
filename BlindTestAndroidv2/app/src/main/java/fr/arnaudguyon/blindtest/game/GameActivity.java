@@ -81,9 +81,11 @@ public class GameActivity extends AppCompatActivity {
         MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
             ArrayList<TrackInfo> tracks = musicPlayer.list();
-            for (TrackInfo trackInfo : tracks) {
+            int rand = (int) (Math.random() * tracks.size());
+            if (rand < tracks.size()) {
+                TrackInfo trackInfo = tracks.get(rand);
+                Log.i(TAG, "Play " + trackInfo.getTitle());
                 musicPlayer.play(trackInfo);
-                break;
             }
         }
     }
