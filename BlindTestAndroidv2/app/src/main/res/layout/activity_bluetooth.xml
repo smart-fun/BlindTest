@@ -1,8 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/redScore"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="40dp"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="#FFDD0000"
+            android:textSize="60sp" />
+
+        <TextView
+            android:id="@+id/yellowScore"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="#FFDDDD00"
+            android:textSize="60sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/singer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        tools:text="Singer or group" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        tools:text="Title of the song" />
 
     <Button
         android:id="@+id/redTest"
@@ -20,24 +67,24 @@
         android:id="@+id/startGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Game"/>
+        android:text="Start Game" />
 
     <Button
         android:id="@+id/play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Play Test"/>
+        android:text="Play Test" />
 
     <Button
         android:id="@+id/pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pause"/>
+        android:text="Pause" />
 
     <Button
         android:id="@+id/next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Next"/>
+        android:text="Select Next" />
 
 </LinearLayout>

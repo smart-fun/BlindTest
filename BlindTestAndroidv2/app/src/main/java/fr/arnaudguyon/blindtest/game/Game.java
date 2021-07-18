@@ -18,7 +18,8 @@ public class Game {
     private enum State {
         NO_STARTED,
         CHOOSE_ICON,
-        WAITING
+        WAITING,
+        PLAYING
     }
 
     @NonNull
@@ -27,6 +28,7 @@ public class Game {
     @NonNull
     private final ArrayList<Player> players = new ArrayList<>();
 
+    private GameListener listener;
     private ArrayList<TrackInfo> tracks;
     private TrackInfo currentTrack;
 
@@ -43,7 +45,8 @@ public class Game {
         }
     }
 
-    public void start(@NonNull Context context) {
+    public void start(@NonNull Context context, @NonNull GameListener listener) {
+        this.listener = listener;
         state = State.WAITING;
         for (Player player : players) {
             player.printScore(context);
@@ -51,7 +54,7 @@ public class Game {
         MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
             tracks = musicPlayer.list();
-            currentTrack = randomNextTrack();
+            //currentTrack = randomNextTrack();
         } else {
             // TODO : error
         }
@@ -78,18 +81,21 @@ public class Game {
 
     }
 
+    public void onPlayPressed() {
+        state = State.PLAYING;
+    }
+
     public void buttonPressed(@NonNull Context context, @NonNull Team team) {
         Log.i(TAG, "buttonPressed Team " + team.name());
-        if (state == State.CHOOSE_ICON) {
-            selectNextIcon(context, team);
+        switch (state) {
+            case CHOOSE_ICON:
+                selectNextIcon(context, team);
+                break;
+            case PLAYING:
+                state = State.WAITING;
+                listener.onWaitResponse(team);
+                break;
         }
-//        for (Player player : players) {
-//            int resId = (player.getTeam() == team) ? player.getTeamIcon().getResId() : R.drawable.none;
-//            Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
-//            if (bitmap != null) {
-//                player.setIcon(bitmap);
-//            }
-//        }
     }
 
     private void selectNextIcon(@NonNull Context context, @NonNull Team team) {
@@ -115,5 +121,8 @@ public class Game {
         }
     }
 
+    public interface GameListener {
+        void onWaitResponse(@NonNull Team team);
+    }
 
 }

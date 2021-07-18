@@ -2,6 +2,7 @@ package fr.arnaudguyon.blindtest.game;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,15 +13,21 @@ import java.util.ArrayList;
 import fr.arnaudguyon.blindtest.BlindApplication;
 import fr.arnaudguyon.blindtest.R;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements Game.GameListener {
 
     private static final String TAG = "GameActivity";
 
     private Game game = new Game();
 
+    private TextView titleView;
+    private TextView singerView;
+
     protected void onActivityReady(@NonNull ArrayList<Player> players) {
 
         setContentView(R.layout.activity_bluetooth);
+
+        titleView = findViewById(R.id.title);
+        singerView = findViewById(R.id.singer);
 
         findViewById(R.id.redTest).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,7 +47,8 @@ public class GameActivity extends AppCompatActivity {
         findViewById(R.id.startGame).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                game.start(GameActivity.this);
+                game.start(GameActivity.this, GameActivity.this);
+                choseNextTrack();
             }
         });
 
@@ -98,12 +106,15 @@ public class GameActivity extends AppCompatActivity {
                 toast("Play error");
             }
         }
+        game.onPlayPressed();
     }
 
     private void choseNextTrack() {
         TrackInfo trackInfo = game.nextTrack();
         if (trackInfo != null) {
             toast("Chose " + trackInfo.getTitle());
+            singerView.setText(trackInfo.getSinger());
+            titleView.setText(trackInfo.getTitle());
         } else {
             toast("No Track to play");
         }
@@ -111,6 +122,16 @@ public class GameActivity extends AppCompatActivity {
 
     private void toast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onWaitResponse(@NonNull Team team) {
+        toast(team.name() + " Pressed button !");
+        MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
+        if (musicPlayer != null) {
+            musicPlayer.pause();
+        }
+        // TODO: check response and validate or continue
     }
 
 }
