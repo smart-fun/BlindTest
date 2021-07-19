@@ -23,12 +23,16 @@ public enum TeamIcon {
     }
 
     public TeamIcon next() {
+        return next(resId);
+    }
+
+    public static TeamIcon next(int currentResId) {
         for(int i=0; i<TeamIcon.values().length; ++i) {
             TeamIcon teamIcon = TeamIcon.values()[i];
-            if (teamIcon == this) {
+            if (teamIcon.resId == currentResId) {
                 ++i;
                 if (i < TeamIcon.values().length) {
-                     return TeamIcon.values()[i];
+                    return TeamIcon.values()[i];
                 } else {
                     return TeamIcon.values()[0];
                 }

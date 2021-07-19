@@ -27,8 +27,8 @@ public class ArduinoPlayer extends Player {
     @NonNull
     private final PeripheralRemote peripheralRemote;
 
-    public ArduinoPlayer(@NonNull Team team, @NonNull PeripheralRemote peripheralRemote) {
-        super(team);
+    public ArduinoPlayer(@NonNull Team.TeamColor teamColor, @NonNull PeripheralRemote peripheralRemote) {
+        super(teamColor);
         this.peripheralRemote = peripheralRemote;
     }
 
@@ -39,8 +39,8 @@ public class ArduinoPlayer extends Player {
     }
 
     @Override
-    public void printScore(@NonNull Context context) {
-        @DrawableRes int resId = numbers[getScore() % 9];
+    public void printScore(@NonNull Context context, int score) {
+        @DrawableRes int resId = numbers[score % 9];
         Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
         if (bitmap != null) {
             byte[] message = iconToMessage(bitmap);
@@ -49,7 +49,7 @@ public class ArduinoPlayer extends Player {
     }
 
     private byte[] iconToMessage(@NonNull Bitmap bitmap) {
-        byte prefix = (byte) ((getTeam() == Team.RED) ? 'R' : 'Y');
+        byte prefix = (byte) ((getTeam() == Team.TeamColor.RED) ? 'R' : 'Y');
         byte[] data = new byte[12];
         data[0] = prefix;
         int index = 1;

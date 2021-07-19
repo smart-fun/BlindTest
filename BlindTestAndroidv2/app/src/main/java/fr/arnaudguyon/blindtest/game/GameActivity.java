@@ -19,6 +19,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     private static final String TAG = "GameActivity";
 
     private Game game = new Game(this);
+    private ArrayList<Team> teams;
 
     private TextView titleView;
     private TextView singerView;
@@ -34,7 +35,9 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     private Led8x8View redLeds;
     private Led8x8View yellowLeds;
 
-    protected void onActivityReady(@NonNull ArrayList<Player> players) {
+    protected void onActivityReady(@NonNull ArrayList<Team> teams) {
+
+        this.teams = teams;
 
         setContentView(R.layout.activity_game);
 
@@ -129,7 +132,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
             }
         });
 
-        game.reset(GameActivity.this, players);
+        game.reset(GameActivity.this, teams);
         updateLeds();
 
     }
@@ -140,12 +143,12 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
     protected void redPressed() {
         Log.i(TAG, "Red Pressed");
-        game.buttonPressed(GameActivity.this, Team.RED);
+        game.buttonPressed(GameActivity.this, Team.TeamColor.RED);
     }
 
     protected void yellowPressed() {
         Log.i(TAG, "Yellow Pressed");
-        game.buttonPressed(GameActivity.this, Team.YELLOW);
+        game.buttonPressed(GameActivity.this, Team.TeamColor.YELLOW);
     }
 
     private void playTest() {
@@ -196,7 +199,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
             musicPlayer.pause();
         }
 
-        if (team == Team.RED) {
+        if (team.getTeamColor() == Team.TeamColor.RED) {
             teamPressIcon.setLedColor(getColor(R.color.red_team));
             teamPressIcon.setLedResId(R.drawable.pacman);  // TODO: team icon
             noticeView.setText(R.string.notice_red_pressed);
@@ -209,7 +212,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         answerLayout.findViewById(R.id.correct).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (team == Team.RED) {
+                if (team.getTeamColor() == Team.TeamColor.RED) {
                     noticeView.setText(R.string.notice_good_red);
                 } else {
                     noticeView.setText(R.string.notice_good_yellow);
@@ -243,11 +246,9 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     }
 
     private void printScores() {
-        ArrayList<Player> players = game.getPlayers();
-        for (Player player : players) {
-            Team team = player.getTeam();
-            int score = player.getScore();
-            switch (team) {
+        for (Team team : teams) {
+            int score = team.getScore();
+            switch (team.getTeamColor()) {
                 case RED:
                     redScore.setText("" + score);
                     break;
@@ -259,12 +260,9 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     }
 
     private void updateLeds() {
-        ArrayList<Player> players = game.getPlayers();
-        for (Player player : players) {
-            Team team = player.getTeam();
-            TeamIcon teamIcon = player.getTeamIcon();
-            int resId = teamIcon.getResId();
-            if (team == Team.RED) {
+        for (Team team : teams) {
+            int resId = team.getIconResId();
+            if (team.getTeamColor() == Team.TeamColor.RED) {
                 redLeds.setLedColor(getColor(R.color.red_team));
                 redLeds.setLedResId(resId);
             } else {

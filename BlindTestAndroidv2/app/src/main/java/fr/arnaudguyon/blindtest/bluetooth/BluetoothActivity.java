@@ -212,13 +212,18 @@ public class BluetoothActivity extends GameActivity implements RegisterForNotifi
     @Override
     public void onRegisterForNotification(@NonNull RegisterForNotificationResult result, @NonNull UUID uuid, @NonNull UUID uuid1) {
 
-        Player playerRed = new ArduinoPlayer(Team.RED, peripheralRemote);
-        Player playerYellow = new ArduinoPlayer(Team.YELLOW, peripheralRemote);
-        ArrayList<Player> players = new ArrayList<>();
-        players.add(playerRed);
-        players.add(playerYellow);
-        onActivityReady(players);
+        Team redTeam = new Team(Team.TeamColor.RED);
+        Player playerRed = new ArduinoPlayer(Team.TeamColor.RED, peripheralRemote);
+        redTeam.addPlayer(playerRed);
 
+        Team yellowTeam = new Team(Team.TeamColor.YELLOW);
+        Player playerYellow = new ArduinoPlayer(Team.TeamColor.YELLOW, peripheralRemote);
+        yellowTeam.addPlayer(playerYellow);
+
+        ArrayList<Team> teams = new ArrayList<>();
+        teams.add(redTeam);
+        teams.add(yellowTeam);
+        onActivityReady(teams);
 
     }
 

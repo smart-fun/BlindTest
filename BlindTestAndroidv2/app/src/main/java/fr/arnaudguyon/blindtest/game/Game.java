@@ -27,7 +27,7 @@ public class Game {
     private State state = State.NO_STARTED;
 
     @NonNull
-    private final ArrayList<Player> players = new ArrayList<>();
+    private final ArrayList<Team> teams = new ArrayList<>();
 
     private GameListener listener;
     private ArrayList<TrackInfo> tracks;
@@ -38,15 +38,17 @@ public class Game {
         this.listener = listener;
     }
 
-    public void reset(@NonNull Context context, @NonNull ArrayList<Player> players) {
-        this.players.clear();
-        this.players.addAll(players);
+    public void reset(@NonNull Context context, @NonNull ArrayList<Team> teams) {
+        this.teams.clear();
+        this.teams.addAll(teams);
         state = State.CHOOSE_ICON;
-        for (Player player : this.players) {
-            int resId = player.getTeamIcon().getResId();
+        for (Team team : teams) {
+            int resId = team.getIconResId();
             Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
             if (bitmap != null) {
-                player.updateDisplay(bitmap);
+                for (Player player : team.getPlayers()) {
+                    player.updateDisplay(bitmap);
+                }
             }
         }
     }
@@ -67,8 +69,8 @@ public class Game {
         return currentTrack;
     }
 
-    public ArrayList<Player> getPlayers() {
-        return players;
+    public ArrayList<Team> getTeams() {
+        return teams;
     }
 
     private TrackInfo randomNextTrack() {
@@ -92,26 +94,33 @@ public class Game {
         state = State.PLAYING;
     }
 
-    public void buttonPressed(@NonNull Context context, @NonNull Team team) {
-        Log.i(TAG, "buttonPressed Team " + team.name());
-        switch (state) {
-            case CHOOSE_ICON:
-                selectNextIcon(context, team);
+    public void buttonPressed(@NonNull Context context, @NonNull Team.TeamColor teamColor) {
+        Log.i(TAG, "buttonPressed Team " + teamColor.name());
+
+        Team team = null;
+        for (Team other : teams) {
+            if (other.getTeamColor() == teamColor) {
+                team = other;
                 break;
-            case PLAYING:
-                state = State.WAITING;
-                listener.onWaitResponse(team);
-                displayTeamPressIcon(context, team);
-                break;
+            }
+        }
+
+        if (team != null) {
+            switch (state) {
+                case CHOOSE_ICON:
+                    selectNextIcon(context, team);
+                    break;
+                case PLAYING:
+                    state = State.WAITING;
+                    listener.onWaitResponse(team);
+                    displayTeamPressIcon(context, team);
+                    break;
+            }
         }
     }
 
     public void goodResponse(Team team) {
-        for (Player player : players) {
-            if (player.getTeam() == team) {
-                player.setScore(player.getScore() + 1);
-            }
-        }
+        team.incScore();
     }
 
     public void onResume() {
@@ -120,63 +129,43 @@ public class Game {
 
     private void displayTeamPressIcon(@NonNull Context context, @NonNull Team team) {
         Bitmap bitmapNone = Bmp.resIdToBitmap(context, R.drawable.none);
-        TeamIcon teamIcon = null;
-        for (Player player : players) {
-            if (player.getTeam() == team) {
-                teamIcon = player.getTeamIcon();
-                break;
-            }
-        }
-        if (teamIcon != null) {
-            int resId = teamIcon.getResId();
-            Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
-            for (Player player : players) {
-                if (player.getTeam() == team) {
-                    if (bitmap != null) {
-                        player.updateDisplay(bitmap);
-                    }
-                } else {
-                    if (bitmapNone != null) {
-                        player.updateDisplay(bitmapNone);
-                    }
+        int resId = team.getIconResId();
+        Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
+        if ((bitmap != null) && (bitmapNone != null)) {
+            for (Team otherTeam : teams) {
+                Bitmap selectedBitmap = (otherTeam.getTeamColor() == team.getTeamColor()) ? bitmap : bitmapNone;
+                for (Player player : otherTeam.getPlayers()) {
+                    player.updateDisplay(selectedBitmap);
                 }
             }
         }
-
     }
 
     private void selectNextIcon(@NonNull Context context, @NonNull Team team) {
-        TeamIcon teamIcon = null;
-        for (Player player : players) {
-            if (player.getTeam() == team) {
-                teamIcon = player.getTeamIcon().next();
-                break;
-            }
-        }
-        // apply to all players of the team
-        if (teamIcon != null) {
-            int resId = teamIcon.getResId();
-            Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
-            for (Player player : players) {
-                if (player.getTeam() == team) {
-                    player.setTeamIcon(teamIcon);
-                    if (bitmap != null) {
-                        player.updateDisplay(bitmap);
-                    }
-                }
+        TeamIcon teamIcon = TeamIcon.next(team.getIconResId());
+        int resId = teamIcon.getResId();
+        team.setIconResId(resId);
+        Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
+        if (bitmap != null) {
+            for (Player player : team.getPlayers()) {
+                player.updateDisplay(bitmap);
             }
         }
         listener.onIconChanged();
     }
 
     public void printScores(@NonNull Context context) {
-        for (Player player : players) {
-            player.printScore(context);
+        for(Team team : teams) {
+            int score = team.getScore();
+            for(Player player : team.getPlayers()) {
+                player.printScore(context, score);
+            }
         }
     }
 
     public interface GameListener {
         void onIconChanged();
+
         void onWaitResponse(@NonNull Team team);
     }
 

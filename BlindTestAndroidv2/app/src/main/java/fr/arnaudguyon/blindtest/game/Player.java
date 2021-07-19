@@ -8,31 +8,21 @@ import androidx.annotation.NonNull;
 public abstract class Player {
 
     @NonNull
-    final private Team team;
+    final private Team.TeamColor team;
 
     @NonNull TeamIcon teamIcon = TeamIcon.CAT;
 
-    private int score = 0;
-
-    public Player(@NonNull Team team) {
+    public Player(@NonNull Team.TeamColor team) {
         this.team = team;
-    }
-
-    public final void setScore(int score) {
-        this.score = score;
     }
 
     public abstract void updateDisplay(@NonNull Bitmap bitmap);
 
-    public abstract void printScore(@NonNull Context context);
+    public abstract void printScore(@NonNull Context context, int score);
 
     @NonNull
-    public final Team getTeam() {
+    public final Team.TeamColor getTeam() {
         return team;
-    }
-
-    public final int getScore() {
-        return score;
     }
 
     @NonNull
