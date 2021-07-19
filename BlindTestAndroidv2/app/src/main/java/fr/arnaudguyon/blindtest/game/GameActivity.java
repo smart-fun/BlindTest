@@ -177,6 +177,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     public void onWaitResponse(@NonNull Team team) {
         //toast(team.name() + " Pressed button !");
 
+        playBar.setVisibility(View.INVISIBLE);
         answerLayout.setVisibility(View.VISIBLE);
         final MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
@@ -199,6 +200,10 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
                 } else {
                     noticeView.setText(R.string.notice_good_yellow);
                 }
+                playButton.setVisibility(View.GONE);
+                pauseButton.setVisibility(View.GONE);
+                resumeButton.setVisibility(View.VISIBLE);
+                playBar.setVisibility(View.VISIBLE);
                 answerLayout.setVisibility(View.INVISIBLE);
                 game.goodResponse(team);
                 printScores();
@@ -213,6 +218,10 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
                 if (musicPlayer != null) {
                     musicPlayer.resume();
                 }
+                playButton.setVisibility(View.GONE);
+                pauseButton.setVisibility(View.VISIBLE);
+                resumeButton.setVisibility(View.GONE);
+                playBar.setVisibility(View.VISIBLE);
                 game.printScores(GameActivity.this);
                 game.onResume();
             }
