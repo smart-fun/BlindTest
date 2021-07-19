@@ -33,6 +33,11 @@ public class Game {
     private ArrayList<TrackInfo> tracks;
     private TrackInfo currentTrack;
 
+    public Game(@NonNull GameListener listener) {
+        super();
+        this.listener = listener;
+    }
+
     public void reset(@NonNull Context context, @NonNull ArrayList<Player> players) {
         this.players.clear();
         this.players.addAll(players);
@@ -46,8 +51,7 @@ public class Game {
         }
     }
 
-    public void start(@NonNull Context context, @NonNull GameListener listener) {
-        this.listener = listener;
+    public void start(@NonNull Context context) {
         state = State.WAITING;
         printScores(context);
         MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
@@ -162,6 +166,7 @@ public class Game {
                 }
             }
         }
+        listener.onIconChanged();
     }
 
     public void printScores(@NonNull Context context) {
@@ -171,6 +176,7 @@ public class Game {
     }
 
     public interface GameListener {
+        void onIconChanged();
         void onWaitResponse(@NonNull Team team);
     }
 

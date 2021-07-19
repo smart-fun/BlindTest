@@ -12,6 +12,12 @@
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal">
 
+        <fr.arnaudguyon.blindtest.tools.Led8x8View
+            android:id="@+id/redLeds"
+            android:layout_gravity="center_vertical"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+
         <TextView
             android:id="@+id/redScore"
             android:layout_width="80dp"
@@ -32,6 +38,12 @@
             android:textColor="@color/yellow_team"
             android:textSize="60sp"
             android:textStyle="bold" />
+
+        <fr.arnaudguyon.blindtest.tools.Led8x8View
+            android:id="@+id/yellowLeds"
+            android:layout_gravity="center_vertical"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
 
     </LinearLayout>
 
@@ -87,8 +99,8 @@
             android:layout_weight="1"
             android:text="CORRECT" />
 
-        <View
-            android:id="@+id/teamColor"
+        <fr.arnaudguyon.blindtest.tools.Led8x8View
+            android:id="@+id/teamPressIcon"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center_vertical" />

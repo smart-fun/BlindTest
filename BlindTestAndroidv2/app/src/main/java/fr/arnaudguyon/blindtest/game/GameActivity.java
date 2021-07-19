@@ -12,24 +12,27 @@ import java.util.ArrayList;
 
 import fr.arnaudguyon.blindtest.BlindApplication;
 import fr.arnaudguyon.blindtest.R;
+import fr.arnaudguyon.blindtest.tools.Led8x8View;
 
 public class GameActivity extends AppCompatActivity implements Game.GameListener {
 
     private static final String TAG = "GameActivity";
 
-    private Game game = new Game();
+    private Game game = new Game(this);
 
     private TextView titleView;
     private TextView singerView;
     private View answerLayout;
     private TextView redScore;
     private TextView yellowScore;
-    private View teamColor;
+    private Led8x8View teamPressIcon;
     private TextView noticeView;
     private View playBar;
     private View playButton;
     private View pauseButton;
     private View resumeButton;
+    private Led8x8View redLeds;
+    private Led8x8View yellowLeds;
 
     protected void onActivityReady(@NonNull ArrayList<Player> players) {
 
@@ -40,12 +43,14 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         answerLayout = findViewById(R.id.answerLayout);
         redScore = findViewById(R.id.redScore);
         yellowScore = findViewById(R.id.yellowScore);
-        teamColor = findViewById(R.id.teamColor);
+        teamPressIcon = findViewById(R.id.teamPressIcon);
         noticeView = findViewById(R.id.notice);
         playBar = findViewById(R.id.playBar);
         playButton = playBar.findViewById(R.id.play);
         pauseButton = playBar.findViewById(R.id.pause);
         resumeButton = playBar.findViewById(R.id.resume);
+        redLeds = findViewById(R.id.redLeds);
+        yellowLeds = findViewById(R.id.yellowLeds);
 
         answerLayout.setVisibility(View.INVISIBLE);
 
@@ -71,7 +76,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
                 startGame.setVisibility(View.GONE);
                 noticeView.setText(R.string.notice_next_chosen);
                 playBar.setVisibility(View.VISIBLE);
-                game.start(GameActivity.this, GameActivity.this);
+                game.start(GameActivity.this);
                 choseNextTrack();
             }
         });
@@ -125,6 +130,8 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         });
 
         game.reset(GameActivity.this, players);
+        updateLeds();
+
     }
 
     protected void onActivityNotReady() {
@@ -174,6 +181,11 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     }
 
     @Override
+    public void onIconChanged() {
+        updateLeds();
+    }
+
+    @Override
     public void onWaitResponse(@NonNull Team team) {
         //toast(team.name() + " Pressed button !");
 
@@ -185,10 +197,12 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         }
 
         if (team == Team.RED) {
-            teamColor.setBackgroundResource(R.color.red_team);
+            teamPressIcon.setLedColor(getColor(R.color.red_team));
+            teamPressIcon.setLedResId(R.drawable.pacman);  // TODO: team icon
             noticeView.setText(R.string.notice_red_pressed);
         } else {
-            teamColor.setBackgroundResource(R.color.yellow_team);
+            teamPressIcon.setLedColor(getColor(R.color.yellow_team));
+            teamPressIcon.setLedResId(R.drawable.pacman);  // TODO: team icon
             noticeView.setText(R.string.notice_yellow_pressed);
         }
 
@@ -240,6 +254,22 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
                 case YELLOW:
                     yellowScore.setText("" + score);
                     break;
+            }
+        }
+    }
+
+    private void updateLeds() {
+        ArrayList<Player> players = game.getPlayers();
+        for (Player player : players) {
+            Team team = player.getTeam();
+            TeamIcon teamIcon = player.getTeamIcon();
+            int resId = teamIcon.getResId();
+            if (team == Team.RED) {
+                redLeds.setLedColor(getColor(R.color.red_team));
+                redLeds.setLedResId(resId);
+            } else {
+                yellowLeds.setLedColor(getColor(R.color.yellow_team));
+                yellowLeds.setLedResId(resId);
             }
         }
     }
