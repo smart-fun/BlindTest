@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Blind Test Android v2</string>
+
+    <string name="notice_welcome">Les joueurs sélectionnent leur icône en appuyant sur les boutons. Appuyez sur Démarrer quand ils ont terminé de choisir.</string>
+
+
+    <string name="snack_disabled_ble">Le Bluetooth est désactivé</string>
+    <string name="snack_enable_ble">Activater</string>
+    <string name="snack_enabling_ble">Activation du Bluetooth…</string>
+    <string name="snack_enabled_ble">Bluetooth activé</string>
+
+    <string name="snack_disabled_location">La localisation est désactivée</string>
+    <string name="snack_enable_location">Activater</string>
+    <string name="snack_enabling_location">Actiovation de la localisation…</string>
+    <string name="snack_enabled_location">Localisation activée</string>
 </resources>

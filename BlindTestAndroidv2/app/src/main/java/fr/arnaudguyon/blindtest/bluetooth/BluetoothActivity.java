@@ -1,21 +1,28 @@
 package fr.arnaudguyon.blindtest.bluetooth;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.location.LocationManagerCompat;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.inventhys.blecentrallib.Central;
 import com.inventhys.blecentrallib.Helper;
 import com.inventhys.blecentrallib.PeripheralRemote;
@@ -35,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.blindtest.game.ArduinoPlayer;
 import fr.arnaudguyon.blindtest.game.GameActivity;
 import fr.arnaudguyon.blindtest.game.Player;
@@ -44,10 +52,10 @@ import fr.arnaudguyon.perm.PermResult;
 
 public class BluetoothActivity extends GameActivity implements RegisterForNotificationListener, MtuUpdateListener, PhyUpdateListener {
 
-    // TODO: check bluetooth is ON, location is ON
-
     private static final String TAG = "BluetoothActivity";
     private static final int PERMISSIONS_REQUEST = 1;
+    private static final int ENABLE_BLUETOOTH_REQUEST = 2;
+    private static final int ENABLE_LOCATION_REQUEST = 3;
     private static final String[] PERMISSIONS = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION};
 
     private enum State {
@@ -61,6 +69,7 @@ public class BluetoothActivity extends GameActivity implements RegisterForNotifi
     private State state = State.IDLE;
     private PeripheralRemote peripheralRemote;
     private Handler handler = new Handler();
+    private Snackbar snackbar;
 
     public static Intent createIntent(@NonNull Context context) {
         Intent intent = new Intent(context, BluetoothActivity.class);
@@ -71,15 +80,35 @@ public class BluetoothActivity extends GameActivity implements RegisterForNotifi
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_empty);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Subscribe to bluetooth and location features changes
+        IntentFilter featureEventFilter = new IntentFilter();
+        featureEventFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        featureEventFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
+        registerReceiver(bleAndLoctionReceiver, featureEventFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(bleAndLoctionReceiver);
+        super.onStop();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (state != State.CONNECTED) {
-            checkPermissions();
+        if (checkBluetoothActivated()) {
+            onBleActive();
+        } else {
+            requestEnableBle();
         }
+
     }
 
     @Override
@@ -97,7 +126,9 @@ public class BluetoothActivity extends GameActivity implements RegisterForNotifi
     private void checkPermissions() {
         final Perm perm = new Perm(this, PERMISSIONS);
         if (perm.areGranted()) {
-            scan();
+            if (state != State.CONNECTED) {
+                scan();
+            }
         } else {
             state = State.PERMISSION;
             perm.askPermissions(PERMISSIONS_REQUEST);
@@ -196,7 +227,7 @@ public class BluetoothActivity extends GameActivity implements RegisterForNotifi
         if ((bytes != null) && (bytes.length > 0)) {
             String text = ByteHelper.byteArrayToHexaString(bytes);
             Log.i(TAG, text);
-            for(byte b : bytes) {
+            for (byte b : bytes) {
                 if (b == 'r') {
                     redPressed();
                 } else if (b == 'y') {
@@ -207,7 +238,6 @@ public class BluetoothActivity extends GameActivity implements RegisterForNotifi
     }
 
 
-
     @Override
     public void onMtuUpdate(@NonNull PeripheralRemote peripheralRemote, int mtu) {
         Log.i(TAG, "Mtu Update " + mtu);
@@ -216,6 +246,115 @@ public class BluetoothActivity extends GameActivity implements RegisterForNotifi
     @Override
     public void onPhyUpdate(@NonNull PeripheralRemote peripheralRemote, int txPhy, int rxPhy) {
         Log.i(TAG, "Phy TX: " + txPhy + ", Phy RX: " + rxPhy);
+    }
+
+    private void requestEnableBle() {
+        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        showSnack(R.string.snack_disabled_ble, Snackbar.LENGTH_INDEFINITE, R.string.snack_enable_ble, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSnack(R.string.snack_enabling_ble, Snackbar.LENGTH_INDEFINITE);
+                bluetoothAdapter.enable();
+            }
+        });
+    }
+
+    private void requestEnableLocation() {
+        showSnack(R.string.snack_disabled_location, Snackbar.LENGTH_INDEFINITE, R.string.snack_enable_location, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), ENABLE_LOCATION_REQUEST);
+                hideSnack();
+            }
+        });
+    }
+
+    private void hideSnack() {
+        if (snackbar != null) {
+            snackbar.dismiss();
+            snackbar = null;
+        }
+    }
+
+    private void showSnack(int message, int duration) {
+        showSnack(message, duration, -1, null);
+    }
+
+    private void showSnack(int message, int duration, int action, View.OnClickListener actionCallback) {
+        hideSnack();
+        snackbar = Snackbar.make(findViewById(R.id.mainLayout), message, duration);
+        if (action > -1) {
+            snackbar.setAction(action, actionCallback);
+        }
+        snackbar.show();
+    }
+
+    private boolean checkBluetoothActivated() {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter != null) {
+            return (adapter.isEnabled());
+        } else {
+            finish();
+        }
+        return false;
+    }
+
+    private boolean checkLocationEnabled() {
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (lm != null) {
+            return LocationManagerCompat.isLocationEnabled(lm);
+        } else {
+            finish();
+            return false;
+        }
+    }
+
+    private final BroadcastReceiver bleAndLoctionReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action == null) {
+                return;
+            }
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        finish();
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        showSnack(R.string.snack_enabled_ble, Snackbar.LENGTH_SHORT);
+                        onBleActive();
+                        break;
+                }
+
+            } else if (action.equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
+                LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                boolean isGpsEnabled = false;
+                boolean isNetworkEnabled = false;
+                if (locationManager != null) {
+                    isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                }
+
+                if (isGpsEnabled || isNetworkEnabled) {
+                    showSnack(R.string.snack_enabled_location, Snackbar.LENGTH_SHORT);
+                    checkPermissions();
+                } else {
+                    finish();
+                }
+            }
+        }
+    };
+
+    private void onBleActive() {
+        if (checkLocationEnabled()) {
+            checkPermissions();
+        } else {
+            requestEnableLocation();
+        }
     }
 
 }

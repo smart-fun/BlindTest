@@ -28,7 +28,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
     protected void onActivityReady(@NonNull ArrayList<Player> players) {
 
-        setContentView(R.layout.activity_bluetooth);
+        setContentView(R.layout.activity_game);
 
         titleView = findViewById(R.id.title);
         singerView = findViewById(R.id.singer);
