@@ -25,6 +25,11 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     private TextView redScore;
     private TextView yellowScore;
     private View teamColor;
+    private TextView noticeView;
+    private View playBar;
+    private View playButton;
+    private View pauseButton;
+    private View resumeButton;
 
     protected void onActivityReady(@NonNull ArrayList<Player> players) {
 
@@ -36,6 +41,11 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         redScore = findViewById(R.id.redScore);
         yellowScore = findViewById(R.id.yellowScore);
         teamColor = findViewById(R.id.teamColor);
+        noticeView = findViewById(R.id.notice);
+        playBar = findViewById(R.id.playBar);
+        playButton = playBar.findViewById(R.id.play);
+        pauseButton = playBar.findViewById(R.id.pause);
+        resumeButton = playBar.findViewById(R.id.resume);
 
         answerLayout.setVisibility(View.INVISIBLE);
 
@@ -54,17 +64,23 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
             }
         });
 
-        findViewById(R.id.startGame).setOnClickListener(new View.OnClickListener() {
+        View startGame = findViewById(R.id.startGame);
+        startGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startGame.setVisibility(View.GONE);
+                noticeView.setText(R.string.notice_next_chosen);
+                playBar.setVisibility(View.VISIBLE);
                 game.start(GameActivity.this, GameActivity.this);
                 choseNextTrack();
             }
         });
 
-        findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
+        playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                playButton.setVisibility(View.GONE);
+                pauseButton.setVisibility(View.VISIBLE);
                 playTest();
             }
         });
@@ -72,6 +88,8 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         findViewById(R.id.pause).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                pauseButton.setVisibility(View.GONE);
+                resumeButton.setVisibility(View.VISIBLE);
                 MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
                 if (musicPlayer != null) {
                     musicPlayer.pause();
@@ -82,6 +100,8 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         findViewById(R.id.resume).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                resumeButton.setVisibility(View.GONE);
+                pauseButton.setVisibility(View.VISIBLE);
                 MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
                 if (musicPlayer != null) {
                     musicPlayer.resume();
@@ -92,6 +112,14 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
+                if (musicPlayer != null) {
+                    musicPlayer.pause();
+                }
+                resumeButton.setVisibility(View.GONE);
+                pauseButton.setVisibility(View.GONE);
+                playButton.setVisibility(View.VISIBLE);
+                noticeView.setText(R.string.notice_next_chosen);
                 choseNextTrack();
             }
         });
@@ -114,13 +142,14 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     }
 
     private void playTest() {
+        noticeView.setText(R.string.notice_playing);
         MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
             TrackInfo trackInfo = game.getCurrentTrack();
             if (trackInfo != null) {
                 Log.i(TAG, "Play " + trackInfo.getTitle());
                 musicPlayer.play(trackInfo);
-                toast("Play " + trackInfo.getTitle());
+                //toast("Play " + trackInfo.getTitle());
             } else {
                 // TODO: end of game ?
                 toast("Play error");
@@ -132,7 +161,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     private void choseNextTrack() {
         TrackInfo trackInfo = game.nextTrack();
         if (trackInfo != null) {
-            toast("Chose " + trackInfo.getTitle());
+            //toast("Chose " + trackInfo.getTitle());
             singerView.setText(trackInfo.getSinger());
             titleView.setText(trackInfo.getTitle());
         } else {
@@ -146,7 +175,8 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
     @Override
     public void onWaitResponse(@NonNull Team team) {
-        toast(team.name() + " Pressed button !");
+        //toast(team.name() + " Pressed button !");
+
         answerLayout.setVisibility(View.VISIBLE);
         final MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
@@ -155,13 +185,20 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
         if (team == Team.RED) {
             teamColor.setBackgroundColor(0xFFDD0000);
+            noticeView.setText(R.string.notice_red_pressed);
         } else {
             teamColor.setBackgroundColor(0xFFDDDD00);
+            noticeView.setText(R.string.notice_yellow_pressed);
         }
 
         answerLayout.findViewById(R.id.correct).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (team == Team.RED) {
+                    noticeView.setText(R.string.notice_good_red);
+                } else {
+                    noticeView.setText(R.string.notice_good_yellow);
+                }
                 answerLayout.setVisibility(View.INVISIBLE);
                 game.goodResponse(team);
                 printScores();
@@ -171,6 +208,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         answerLayout.findViewById(R.id.wrong).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                noticeView.setText(R.string.notice_playing);
                 answerLayout.setVisibility(View.INVISIBLE);
                 if (musicPlayer != null) {
                     musicPlayer.resume();

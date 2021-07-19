@@ -1,8 +1,15 @@
 <resources>
     <string name="app_name">Blind Test Android v2</string>
 
-    <string name="notice_welcome">Les joueurs sélectionnent leur icône en appuyant sur les boutons. Appuyez sur Démarrer quand ils ont terminé de choisir.</string>
+    <string name="notice_welcome">Les joueurs doivent choisir leur icône d\'équipe en appuyant sur les boutons. Appuyez sur Démarrer quand ils auront terminé de choisir.</string>
+    <string name="notice_next_chosen">Le prochain morceau a été choisi. Appuyez sur Lecture quand vous voudrez jouer le morceau</string>
+    <string name="notice_playing">Les équipes doivent appuyer sur leur bouton quand elles ont trouvé le nom de l\'interprète ou le titre de la chanson.</string>
+    <string name="notice_red_pressed">Les ROUGES ont appuyé en premier. Validez ou non leur réponse (titre ou interprète)</string>
+    <string name="notice_yellow_pressed">Les JAUNES ont appuyé en premier. Validez ou non leur réponse (titre ou interprète)</string>
+    <string name="notice_good_red">L\'équipe ROUGE gagne 1 point ! Appuyez sur Lecture pour continuer à jouer le morceau, ou sur Prochain.</string>
+    <string name="notice_good_yellow">L\'équipe JAUNE gagne 1 point ! Appuyez sur Lecture pour continuer à jouer le morceau, ou sur Prochain.</string>
 
+    <string name="start_button">Démarrer le Blind Test</string>
 
     <string name="snack_disabled_ble">Le Bluetooth est désactivé</string>
     <string name="snack_enable_ble">Activater</string>

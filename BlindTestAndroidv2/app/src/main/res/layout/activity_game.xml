@@ -45,6 +45,13 @@
         android:text="@string/notice_welcome"
         android:textAllCaps="true" />
 
+    <Button
+        android:id="@+id/startGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/start_button" />
+
     <TextView
         android:id="@+id/singer"
         android:layout_width="match_parent"
@@ -98,46 +105,73 @@
     </LinearLayout>
 
 
-    <Button
-        android:id="@+id/redTest"
+    <LinearLayout
+        android:id="@+id/playBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="RED" />
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        tools:visibility="visible">
 
-    <Button
-        android:id="@+id/yellowTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="YELLOW" />
+        <ImageButton
+            android:id="@+id/play"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_play" />
 
-    <Button
-        android:id="@+id/startGame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Game" />
+        <ImageButton
+            android:id="@+id/pause"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_pause"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-    <Button
-        android:id="@+id/play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play" />
+        <ImageButton
+            android:id="@+id/resume"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_play"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-    <Button
-        android:id="@+id/pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pause" />
+        <ImageButton
+            android:id="@+id/next"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_next" />
 
-    <Button
-        android:id="@+id/resume"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Resume" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/next"
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Next" />
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/redTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="RED" />
+
+        <Button
+            android:id="@+id/yellowTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="YELLOW" />
+    </LinearLayout>
 
 </LinearLayout>
