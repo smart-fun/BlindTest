@@ -35,6 +35,12 @@ public class PlayListItem extends RecyclerItem {
         Holder holder = (Holder) parentHolder;
         holder.name.setText(playlist.getName());
 
+        if ((position & 1) == 0) {
+            holder.itemView.setBackgroundColor(0);
+        } else {
+            holder.itemView.setBackgroundColor(0x08000000);
+        }
+
         Glide.with(holder.picture).load(playlist.getImageUrl(640)).into(holder.picture);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

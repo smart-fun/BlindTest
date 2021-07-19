@@ -185,10 +185,10 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         }
 
         if (team == Team.RED) {
-            teamColor.setBackgroundColor(0xFFDD0000);
+            teamColor.setBackgroundResource(R.color.red_team);
             noticeView.setText(R.string.notice_red_pressed);
         } else {
-            teamColor.setBackgroundColor(0xFFDDDD00);
+            teamColor.setBackgroundResource(R.color.yellow_team);
             noticeView.setText(R.string.notice_yellow_pressed);
         }
 
@@ -233,7 +233,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         for (Player player : players) {
             Team team = player.getTeam();
             int score = player.getScore();
-            switch(team) {
+            switch (team) {
                 case RED:
                     redScore.setText("" + score);
                     break;

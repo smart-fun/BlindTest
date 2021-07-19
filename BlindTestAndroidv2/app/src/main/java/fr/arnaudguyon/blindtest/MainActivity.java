@@ -16,7 +16,7 @@ import fr.arnaudguyon.blindtest.spotify.SpotUser;
 import fr.arnaudguyon.blindtest.spotify.SpotAuth;
 import fr.arnaudguyon.blindtest.spotify.SpotConst;
 import fr.arnaudguyon.blindtest.spotify.SpotPlay;
-
+// TODO: add volume bar
 public class MainActivity extends AppCompatActivity {
 
     private static final int SPOTIFY_AUTH_REQUEST = 1;
