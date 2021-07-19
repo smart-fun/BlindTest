@@ -11,6 +11,9 @@
 
     <string name="start_button">Démarrer le Blind Test</string>
 
+    <string name="correct_answer">Correct !</string>
+    <string name="wrong_answer">Mauvaise réponse</string>
+
     <string name="snack_disabled_ble">Le Bluetooth est désactivé</string>
     <string name="snack_enable_ble">Activater</string>
     <string name="snack_enabling_ble">Activation du Bluetooth…</string>

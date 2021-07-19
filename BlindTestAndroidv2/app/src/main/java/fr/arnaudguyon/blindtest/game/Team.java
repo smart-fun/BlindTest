@@ -1,6 +1,6 @@
 package fr.arnaudguyon.blindtest.game;
 
-import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
@@ -14,10 +14,10 @@ public class Team {
         RED(R.color.red_team),
         YELLOW(R.color.yellow_team);
 
-        @ColorInt
+        @ColorRes
         final int colorResId;
 
-        TeamColor(@ColorInt int color) {
+        TeamColor(@ColorRes int color) {
             this.colorResId = color;
         }
 
@@ -30,7 +30,7 @@ public class Team {
     private int score;
     private final TeamColor teamColor;
     @DrawableRes
-    int iconResId;
+    int iconResId = R.drawable.cat;
     @NonNull
     private final ArrayList<Player> players = new ArrayList<>();
 

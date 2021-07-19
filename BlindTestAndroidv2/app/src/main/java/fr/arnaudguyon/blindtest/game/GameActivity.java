@@ -192,26 +192,26 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     public void onWaitResponse(@NonNull Team team) {
         //toast(team.name() + " Pressed button !");
 
-        playBar.setVisibility(View.INVISIBLE);
+        playBar.setVisibility(View.GONE);
         answerLayout.setVisibility(View.VISIBLE);
         final MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
             musicPlayer.pause();
         }
 
+        teamPressIcon.setVisibility(View.VISIBLE);
+        teamPressIcon.setLedColor(getColor(team.getTeamColor().getColorResId()));
+        teamPressIcon.setLedResId(team.getIconResId());
         if (team.getTeamColor() == Team.TeamColor.RED) {
-            teamPressIcon.setLedColor(getColor(R.color.red_team));
-            teamPressIcon.setLedResId(R.drawable.pacman);  // TODO: team icon
             noticeView.setText(R.string.notice_red_pressed);
         } else {
-            teamPressIcon.setLedColor(getColor(R.color.yellow_team));
-            teamPressIcon.setLedResId(R.drawable.pacman);  // TODO: team icon
             noticeView.setText(R.string.notice_yellow_pressed);
         }
 
         answerLayout.findViewById(R.id.correct).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                teamPressIcon.setVisibility(View.GONE);
                 if (team.getTeamColor() == Team.TeamColor.RED) {
                     noticeView.setText(R.string.notice_good_red);
                 } else {
@@ -230,6 +230,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         answerLayout.findViewById(R.id.wrong).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                teamPressIcon.setVisibility(View.GONE);
                 noticeView.setText(R.string.notice_playing);
                 answerLayout.setVisibility(View.INVISIBLE);
                 if (musicPlayer != null) {
