@@ -40,7 +40,7 @@ public class ArduinoPlayer extends Player {
 
     @Override
     public void printScore(@NonNull Context context, int score) {
-        @DrawableRes int resId = numbers[score % 9];
+        @DrawableRes int resId = numbers[score % 10];
         Bitmap bitmap = Bmp.resIdToBitmap(context, resId);
         if (bitmap != null) {
             byte[] message = iconToMessage(bitmap);

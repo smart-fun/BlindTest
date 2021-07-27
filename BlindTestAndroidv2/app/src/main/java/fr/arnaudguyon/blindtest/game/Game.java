@@ -55,6 +55,9 @@ public class Game {
 
     public void start(@NonNull Context context) {
         state = State.WAITING;
+        for(Team team: teams) {
+            team.resetScore();
+        }
         printScores(context);
         MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
@@ -105,7 +108,7 @@ public class Game {
             }
         }
 
-        if (team != null) {
+        if ((team != null) && !gameEnded()) {
             switch (state) {
                 case CHOOSE_ICON:
                     selectNextIcon(context, team);
@@ -121,6 +124,15 @@ public class Game {
 
     public void goodResponse(Team team) {
         team.incScore();
+    }
+
+    public boolean gameEnded() {
+        for(Team team : teams) {
+            if (team.getScore() >= 9) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void onResume() {
