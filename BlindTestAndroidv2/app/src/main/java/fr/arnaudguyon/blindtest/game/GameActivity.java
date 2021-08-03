@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 import fr.arnaudguyon.blindtest.BlindApplication;
+import fr.arnaudguyon.blindtest.BuildConfig;
 import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.blindtest.tools.Led8x8View;
 
@@ -41,6 +42,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     private View nextButton;
     private Led8x8View redLeds;
     private Led8x8View yellowLeds;
+    private TextView songsLeft;
 
     protected void onActivityReady(@NonNull ArrayList<Team> teams) {
 
@@ -64,23 +66,26 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         resumeButton = playBar.findViewById(R.id.resume);
         redLeds = findViewById(R.id.redLeds);
         yellowLeds = findViewById(R.id.yellowLeds);
+        songsLeft = findViewById(R.id.songsLeft);
 
         answerLayout.setVisibility(View.INVISIBLE);
 
-        findViewById(R.id.redTest).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redPressed();
+        if (BuildConfig.DEBUG) {
+            redScore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    redPressed();
 
-            }
-        });
+                }
+            });
 
-        findViewById(R.id.yellowTest).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                yellowPressed();
-            }
-        });
+            yellowScore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    yellowPressed();
+                }
+            });
+        }
 
         startGame = findViewById(R.id.startGame);
         startGame.setOnClickListener(new View.OnClickListener() {
@@ -187,6 +192,8 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
     private void choseNextTrack() {
         TrackInfo trackInfo = game.nextTrack();
+        int count = game.songsLeft();
+        songsLeft.setText(getString(R.string.songs_left, count));
         if (trackInfo != null) {
             //toast("Chose " + trackInfo.getTitle());
             singerView.setText(trackInfo.getSinger());
