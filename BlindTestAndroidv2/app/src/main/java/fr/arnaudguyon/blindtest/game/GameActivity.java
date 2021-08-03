@@ -1,12 +1,16 @@
 package fr.arnaudguyon.blindtest.game;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -21,6 +25,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     private Game game = new Game(this);
     private ArrayList<Team> teams;
 
+    private ImageView picture;
     private TextView titleView;
     private TextView singerView;
     private View answerLayout;
@@ -43,6 +48,9 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
         setContentView(R.layout.activity_game);
 
+        //getSupportActionBar().hide();
+
+        picture = findViewById(R.id.picture);
         titleView = findViewById(R.id.title);
         singerView = findViewById(R.id.singer);
         answerLayout = findViewById(R.id.answerLayout);
@@ -183,7 +191,15 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
             //toast("Chose " + trackInfo.getTitle());
             singerView.setText(trackInfo.getSinger());
             titleView.setText(trackInfo.getTitle());
+            String url = trackInfo.getPictureUrl();
+            if (!TextUtils.isEmpty(url)) {
+                picture.setVisibility(View.VISIBLE);
+                Glide.with(picture).load(url).into(picture);
+            } else {
+                picture.setVisibility(View.INVISIBLE);
+            }
         } else {
+            picture.setVisibility(View.INVISIBLE);
             toast("No Track to play");
         }
     }
