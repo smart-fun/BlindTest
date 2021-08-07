@@ -39,9 +39,9 @@ void setup() {
   pantalla.rotar(false);
 
   pantalla.borrar();
-  //  //pantalla.escribirFrase("Hi");
-  pantalla.escribirCifra(4, 0);
-  pantalla.escribirCifra(2, 1);
+  pantalla.escribirFrase("42");
+  //pantalla.escribirCifra(4, 0);
+  //pantalla.escribirCifra(2, 1);
 
 }
 
