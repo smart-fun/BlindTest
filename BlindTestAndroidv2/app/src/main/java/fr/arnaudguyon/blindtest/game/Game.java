@@ -55,13 +55,25 @@ public class Game {
 
     public void start(@NonNull Context context) {
         state = State.WAITING;
+        for (Team team : teams) {
+            team.resetScore();
+        }
         printScores(context);
         MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
         if (musicPlayer != null) {
-            tracks = musicPlayer.list();
+            if ((tracks == null) || tracks.isEmpty()) {
+                tracks = musicPlayer.list();
+            }
             //currentTrack = randomNextTrack();
         } else {
             // TODO : error
+        }
+    }
+
+    public void reloadPlayist() {
+        MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
+        if (musicPlayer != null) {
+            tracks = musicPlayer.list();
         }
     }
 
@@ -86,6 +98,10 @@ public class Game {
         return randomNextTrack();
     }
 
+    public int songsLeft() {
+        return (tracks != null) ? tracks.size() : 0;
+    }
+
     public void stop() {
 
     }
@@ -105,7 +121,7 @@ public class Game {
             }
         }
 
-        if (team != null) {
+        if ((team != null) && !gameEnded()) {
             switch (state) {
                 case CHOOSE_ICON:
                     selectNextIcon(context, team);
@@ -121,6 +137,15 @@ public class Game {
 
     public void goodResponse(Team team) {
         team.incScore();
+    }
+
+    public boolean gameEnded() {
+        for (Team team : teams) {
+            if (team.getScore() >= 9) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void onResume() {
@@ -155,9 +180,9 @@ public class Game {
     }
 
     public void printScores(@NonNull Context context) {
-        for(Team team : teams) {
+        for (Team team : teams) {
             int score = team.getScore();
-            for(Player player : team.getPlayers()) {
+            for (Player player : team.getPlayers()) {
                 player.printScore(context, score);
             }
         }

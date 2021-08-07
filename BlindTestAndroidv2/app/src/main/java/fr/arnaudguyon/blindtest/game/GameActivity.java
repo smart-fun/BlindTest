@@ -1,16 +1,21 @@
 package fr.arnaudguyon.blindtest.game;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
 import fr.arnaudguyon.blindtest.BlindApplication;
+import fr.arnaudguyon.blindtest.BuildConfig;
 import fr.arnaudguyon.blindtest.R;
 import fr.arnaudguyon.blindtest.tools.Led8x8View;
 
@@ -21,6 +26,7 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     private Game game = new Game(this);
     private ArrayList<Team> teams;
 
+    private ImageView picture;
     private TextView titleView;
     private TextView singerView;
     private View answerLayout;
@@ -32,8 +38,11 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
     private View playButton;
     private View pauseButton;
     private View resumeButton;
+    private View startGame;
+    private View nextButton;
     private Led8x8View redLeds;
     private Led8x8View yellowLeds;
+    private TextView songsLeft;
 
     protected void onActivityReady(@NonNull ArrayList<Team> teams) {
 
@@ -41,6 +50,9 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
         setContentView(R.layout.activity_game);
 
+        //getSupportActionBar().hide();
+
+        picture = findViewById(R.id.picture);
         titleView = findViewById(R.id.title);
         singerView = findViewById(R.id.singer);
         answerLayout = findViewById(R.id.answerLayout);
@@ -54,33 +66,42 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
         resumeButton = playBar.findViewById(R.id.resume);
         redLeds = findViewById(R.id.redLeds);
         yellowLeds = findViewById(R.id.yellowLeds);
+        songsLeft = findViewById(R.id.songsLeft);
 
         answerLayout.setVisibility(View.INVISIBLE);
 
-        findViewById(R.id.redTest).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redPressed();
+        if (BuildConfig.DEBUG) {
+            redScore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    redPressed();
 
-            }
-        });
+                }
+            });
 
-        findViewById(R.id.yellowTest).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                yellowPressed();
-            }
-        });
+            yellowScore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    yellowPressed();
+                }
+            });
+        }
 
-        View startGame = findViewById(R.id.startGame);
+        startGame = findViewById(R.id.startGame);
         startGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                playBar.setVisibility(View.VISIBLE);
+                nextButton.setVisibility(View.VISIBLE);
+                pauseButton.setVisibility(View.GONE);
+                resumeButton.setVisibility(View.GONE);
+                playButton.setVisibility(View.VISIBLE);
+
                 startGame.setVisibility(View.GONE);
                 noticeView.setText(R.string.notice_next_chosen);
-                playBar.setVisibility(View.VISIBLE);
                 game.start(GameActivity.this);
                 choseNextTrack();
+                printScores();
             }
         });
 
@@ -117,7 +138,8 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
             }
         });
 
-        findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
+        nextButton = findViewById(R.id.next);
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MusicPlayer musicPlayer = BlindApplication.getMusicPlayer();
@@ -170,11 +192,21 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
 
     private void choseNextTrack() {
         TrackInfo trackInfo = game.nextTrack();
+        int count = game.songsLeft();
+        songsLeft.setText(getString(R.string.songs_left, count));
         if (trackInfo != null) {
             //toast("Chose " + trackInfo.getTitle());
             singerView.setText(trackInfo.getSinger());
             titleView.setText(trackInfo.getTitle());
+            String url = trackInfo.getPictureUrl();
+            if (!TextUtils.isEmpty(url)) {
+                picture.setVisibility(View.VISIBLE);
+                Glide.with(picture).load(url).into(picture);
+            } else {
+                picture.setVisibility(View.INVISIBLE);
+            }
         } else {
+            picture.setVisibility(View.INVISIBLE);
             toast("No Track to play");
         }
     }
@@ -212,11 +244,6 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
             @Override
             public void onClick(View v) {
                 teamPressIcon.setVisibility(View.GONE);
-                if (team.getTeamColor() == Team.TeamColor.RED) {
-                    noticeView.setText(R.string.notice_good_red);
-                } else {
-                    noticeView.setText(R.string.notice_good_yellow);
-                }
                 playButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.GONE);
                 resumeButton.setVisibility(View.VISIBLE);
@@ -225,6 +252,21 @@ public class GameActivity extends AppCompatActivity implements Game.GameListener
                 game.goodResponse(team);
                 printScores();
                 game.printScores(GameActivity.this);
+                if (game.gameEnded()) {
+                    if (team.getTeamColor() == Team.TeamColor.RED) {
+                        noticeView.setText(R.string.notice_red_wins);
+                    } else {
+                        noticeView.setText(R.string.notice_yellow_wins);
+                    }
+                    nextButton.setVisibility(View.GONE);
+                    startGame.setVisibility(View.VISIBLE);
+                } else {
+                    if (team.getTeamColor() == Team.TeamColor.RED) {
+                        noticeView.setText(R.string.notice_good_red);
+                    } else {
+                        noticeView.setText(R.string.notice_good_yellow);
+                    }
+                }
             }
         });
         answerLayout.findViewById(R.id.wrong).setOnClickListener(new View.OnClickListener() {

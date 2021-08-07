@@ -8,8 +8,10 @@
     <string name="notice_yellow_pressed">Les JAUNES ont appuyé en premier. Validez ou non leur réponse (titre ou interprète)</string>
     <string name="notice_good_red">L\'équipe ROUGE gagne 1 point ! Appuyez sur Lecture pour continuer à jouer le morceau, ou sur Prochain.</string>
     <string name="notice_good_yellow">L\'équipe JAUNE gagne 1 point ! Appuyez sur Lecture pour continuer à jouer le morceau, ou sur Prochain.</string>
-
+    <string name="notice_red_wins">L\'équipe ROUGE a gagné !</string>
+    <string name="notice_yellow_wins">L\'équipe JAUNE a gagné !</string>
     <string name="start_button">Démarrer le Blind Test</string>
+    <string name="songs_left">%d songs left</string>
 
     <string name="correct_answer">Correct !</string>
     <string name="wrong_answer">Mauvaise réponse</string>
