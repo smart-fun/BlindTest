@@ -17,6 +17,9 @@ import fr.arnaudguyon.blindtest.spotify.SpotAuth;
 import fr.arnaudguyon.blindtest.spotify.SpotConst;
 import fr.arnaudguyon.blindtest.spotify.SpotPlay;
 // TODO: add volume bar
+// TODO: alerte 5 secondes sans réponse après avoir buzzé
+// TODO: compteur nombre de parties
+// TODO: x mauvaises réponses, on passe à la chanson suivante
 public class MainActivity extends AppCompatActivity {
 
     private static final int SPOTIFY_AUTH_REQUEST = 1;
